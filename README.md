@@ -1,7 +1,4 @@
-# ENGS_Honors_Thesis
-
-                   AudioMaster: Neural Audio Mastering
-
+Taka Khoo ENGS Honors Thesis 2025
 
 Overview
 --------
