@@ -90,10 +90,6 @@ Contributing
 ------------
 Contributions to AudioMaster are welcome! Please feel free to fork the repository, submit bug reports, propose enhancements, or contribute improvements via pull requests.
 
-License
--------
-This project is licensed under the [Your License Name] License. (Replace this with your actual license details.)
-
 Acknowledgments
 ---------------
 - **Professor Peter Chin:** Head Advisor - For guidance on machine learning and signal processing techniques.
