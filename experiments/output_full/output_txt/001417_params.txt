@@ -1,0 +1,5 @@
+EQ: fc=4106.22 Hz, Q=2.31, eq_gain_db=-1.68
+Gain: gain_db=-0.78
+Echo: delay_seconds=0.81, attenuation=0.49
+Reverb: decay=0.48, ir_length=5247
+Compression: threshold_db=-14.44, ratio=2.10, makeup_gain_db=0.30
