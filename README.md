@@ -3,7 +3,7 @@
 **Honors Thesis Project for ENGS 88 at Dartmouth College**  
 **Primary Advisor:** Peter Chin  
 **Secondary Consultant:** Michael Casey  
-**Student:** [Your Name]
+**Student:** Taka Khoo
 
 ---
 
