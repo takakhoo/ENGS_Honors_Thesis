@@ -5,9 +5,8 @@ import librosa
 import numpy as np
 import torch
 from torch.utils.data import Dataset  # Use the correct, capitalized Dataset
-sys.path.append(os.path.join(os.path.dirname(__file__), ".."))
 
-print("Python executable:", sys.executable)
+sys.path.append(os.path.join(os.path.dirname(__file__), ".."))
 
 def compute_mel_spectrogram(audio, sr, n_mels=128, n_fft=2048, hop_length=512):
     mel_spec = librosa.feature.melspectrogram(y=audio, sr=sr, n_fft=n_fft, 
@@ -63,45 +62,78 @@ class PairedAudioDataset(Dataset):
         song_id = os.path.basename(orig_path).split("_")[0]
         mod_path = os.path.join(self.audio_dir, f"{song_id}_modified.wav")
         
-        #Loading Audio
-        original, sr_orig = librosa.load(orig_path, sr=self.sr)
-        modified, sr_mod = librosa.load(mod_path, sr=self.sr)
+        try:
+            #Loading Audio
+            original, sr_orig = librosa.load(orig_path, sr=self.sr, mono=True)
+            modified, sr_mod = librosa.load(mod_path, sr=self.sr, mono=True)
+        except Exception as e:
+            print(f"Error loading {orig_path}: {e}")
+            return self._empty_tensor()
         
+        if np.isnan(original).any() or np.isinf(original).any():
+            print(f"NaN/Inf detected in {orig_path}, using zeros")
+            return self._empty_tensor()
+        
+        if np.isnan(modified).any() or np.isinf(modified).any():
+            print(f"NaN/Inf detected in {orig_path}, using zeros")
+            return self._empty_tensor()
+        
+        #Clipping audio to valid range
+        original = np.clip(original, -1.0, 1.0)
+        modified = np.clip(modified, -1.0, 1.0)
+        
+        #Feature extraction
         if self.mode == "spectrogram":
-            #Computing melspectrogram features
-            if self.transform:
-                original = self.transform(original, sr_orig)
-                modified = self.transform(modified, sr_mod)
-            else:
-                original = compute_mel_spectrogram(original, sr_orig)
-                modified = compute_mel_spectrogram(modified, sr_mod)
+            original = self._process_spectrogram(original, sr_orig)
+            modified = self._process_spectrogram(modified, sr_mod)
         elif self.mode == "rms":
             original = compute_rms(original)
             modified = compute_rms(modified)
         elif self.mode == "rms_segmented":
-            if self.segment_duration is None:
-                raise ValueError("segment_duration must be provided for 'rms_segmented' mode")
-            original = compute_segmented_rms(original, sr_orig, segment_duration=self.segment_duration)
-            modified = compute_segmented_rms(modified, sr_mod, segment_duration=self.segment_duration)
+            if not self.segment_duration:
+                raise ValueError("Mode must be 'spectrogram' or 'rms'")
+            original = compute_segmented_rms(original, sr_orig, self.segment_duration)
+            modified = compute_segmented_rms(modified, sr_mod, self.segment_duration)
         else:
-            raise ValueError("Mode must be 'spectrogram' or 'rms'")
+            raise ValueError(f"Invalid mode: {self.mode}")
         
-        #Converting to torch tensors
-        if self.mode == "spectrogram": #To add channel dimension ]channel, freq, time]
-            original = torch.tensor(original, dtype=torch.float32).unsqueeze(0)
-            modified = torch.tensor(modified, dtype=torch.float32).unsqueeze(0)
-        else:
-            original = torch.tensor(original, dtype=torch.float32)
-            modified = torch.tensor(modified, dtype=torch.float32)
-        
-        #Return the tuple (input, target)
-        return modified, original
 
+        return modified, original
+        
+    def _process_spectrogram(self, audio, sr):
+        """Process audio into a mel spectrogram with correct shape and normalization."""
+        # Compute mel spectrogram
+        mel_spec = librosa.feature.melspectrogram(
+            y=audio,
+            sr=sr,
+            n_fft=2048,
+            hop_length=512,
+            n_mels=128
+        )
+        
+        # Convert to dB scale
+        mel_spec = librosa.power_to_db(mel_spec + 1e-6, ref=np.max)
+        
+        # Convert to tensor and ensure shape [1, freq, time]
+        mel_spec = torch.tensor(mel_spec, dtype=torch.float32)
+        if len(mel_spec.shape) == 2:
+            mel_spec = mel_spec.unsqueeze(0)  # Add channel dimension
+        
+        # Normalize to [0, 1] range
+        mel_spec = (mel_spec - mel_spec.min()) / (mel_spec.max() - mel_spec.min() + 1e-6)
+        
+        return mel_spec
+        
 # Test usage:
 if __name__ == "__main__":
+    
+    CURRENT_DIR = os.path.dirname(os.path.abspath(__file__))
+    # Go two levels up to the project root, then into experiments/output_full/output_audio
+    AUDIO_DIR = os.path.join(CURRENT_DIR, "..", "experiments", "output_full", "output_audio")
+    
     # To test spectrogram mode:
     dataset_spec = PairedAudioDataset(
-        audio_dir="experiments/output_full/output_audio", 
+        audio_dir=AUDIO_DIR, 
         sr=44100, 
         transform=compute_mel_spectrogram, 
         mode="spectrogram"
