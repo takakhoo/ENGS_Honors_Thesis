@@ -1,16 +1,3 @@
-"""
-train.py
-
-This training script implements a cascaded neural network for automatic music mastering.
-
-Improvements in this version:
-- Better balanced loss function
-- More robust handling of NaN values
-- Improved data loading with validation split
-- Better learning rate scheduling
-- Training/validation loss tracking and visualization
-"""
-
 import os
 import sys
 import torch
@@ -25,284 +12,248 @@ import matplotlib.pyplot as plt
 from datetime import datetime
 
 from dataset import PairedAudioDataset, compute_mel_spectrogram
-from models import UNet, LSTMForecasting, CascadedMastering
+from models import TwoStageUNet
 
+# ----------------------------
+# Collate Function (no changes needed)
+# ----------------------------
 def collate_pad(batch):
-    """Collate function that pads spectrograms to the same length in a batch."""
-    # Extract input and target spectrograms
-    input_specs, target_specs = zip(*batch)
-    
-    # Find maximum time dimension
+    # Each sample in the batch is (input_spec, target_spec, param_vector)
+    input_specs, target_specs, param_list = zip(*batch)
     max_T = max(t.shape[-1] for t in input_specs)
-    
-    # Pad and stack input spectrograms
     padded_inputs = []
     for t in input_specs:
-        # Ensure tensor is 3D: [channels=1, freq, time]
         if len(t.shape) == 2:
-            t = t.unsqueeze(0)  # Add channel dim if needed
-        elif len(t.shape) == 3:
-            if t.shape[0] > 1:
-                t = t[:1]  # Take only first channel if multiple exist
-        else:
-            raise ValueError(f"Unexpected tensor shape: {t.shape}")
-            
-        # Verify shape is [1, freq, time]
-        assert t.shape[0] == 1, f"Expected 1 channel, got {t.shape[0]}"
-        
+            t = t.unsqueeze(0)
+        elif len(t.shape) == 3 and t.shape[0] > 1:
+            t = t[:1]
         padded = F.pad(t, (0, max_T - t.shape[-1]))
         padded_inputs.append(padded)
-    
-    # Pad and stack target spectrograms
     padded_targets = []
     for t in target_specs:
         if len(t.shape) == 2:
-            t = t.unsqueeze(0)  # Add channel dim if needed
-        elif len(t.shape) == 3:
-            if t.shape[0] > 1:
-                t = t[:1]  # Take only first channel if multiple exist
-        else:
-            raise ValueError(f"Unexpected tensor shape: {t.shape}")
-            
-        # Verify shape is [1, freq, time]
-        assert t.shape[0] == 1, f"Expected 1 channel, got {t.shape[0]}"
-        
+            t = t.unsqueeze(0)
+        elif len(t.shape) == 3 and t.shape[0] > 1:
+            t = t[:1]
         padded = F.pad(t, (0, max_T - t.shape[-1]))
         padded_targets.append(padded)
-    
-    # Stack into batch tensors
     inputs = torch.stack(padded_inputs, dim=0)
     targets = torch.stack(padded_targets, dim=0)
-    
-    # Verify final shapes
-    assert inputs.shape[1] == 1, f"Expected 1 channel in batch, got {inputs.shape[1]}"
-    assert targets.shape[1] == 1, f"Expected 1 channel in batch, got {targets.shape[1]}"
-    
-    return inputs, targets
+    params = torch.stack(param_list, dim=0)  # shape: [batch, 10]
+    return inputs, targets, params
 
+# ----------------------------
+# Loss Module
+# ----------------------------
 class AudioMasteringLoss(nn.Module):
+    """
+    Loss function with three components:
+      - Spectrogram Loss: Emphasize L1 (MAE) very heavily to preserve fine details.
+      - Parameter Loss: Critical for our work — weighted high.
+      - Perceptual Loss: Computed on mel spectrograms.
+    The weights have been revised so that:
+      spectrogram_weight = 0.3, parameter_weight = 0.5, perceptual_weight = 0.2 (sum=1.0).
+    """
     def __init__(self, sr=44100, n_fft=2048, hop_length=512, n_mels=128):
         super(AudioMasteringLoss, self).__init__()
         self.sr = sr
         self.n_fft = n_fft
         self.hop_length = hop_length
         self.n_mels = n_mels
+        self.spectrogram_weight = 0.3
+        self.parameter_weight = 0.5
+        self.perceptual_weight = 0.2
         
-        # Adjusted loss weights for better balance
-        self.spectrogram_weight = 0.7  # Primary focus on spectrogram match
-        self.parameter_weight = 0.1    # Less weight on parameters
-        self.perceptual_weight = 0.2   # Some weight on perceptual quality
-        
-        # Loss functions
-        self.spectrogram_loss = nn.L1Loss()
-        self.parameter_loss = nn.MSELoss()
+        self.spec_loss_l1 = nn.L1Loss()
+        self.spec_loss_l2 = nn.MSELoss()
+        self.param_loss = nn.MSELoss()
     
     def forward(self, output_spec, target_spec, predicted_params, target_params):
-        # Add small epsilon to prevent log(0) and NaN
         epsilon = 1e-6
         
-        # Ensure spectrograms are finite
+        # Clip spectrograms to avoid log(0)
         output_spec = torch.clamp(output_spec, min=epsilon)
         target_spec = torch.clamp(target_spec, min=epsilon)
         
-        # Spectrogram loss with stability checks
-        if torch.isnan(output_spec).any() or torch.isnan(target_spec).any():
-            spec_loss = torch.tensor(0.0, device=output_spec.device)
-            print("Warning: NaN detected in spectrograms, skipping loss computation")
-        else:
-            spec_loss = self.spectrogram_loss(output_spec, target_spec)
+        # Compute L1 and L2 spectrogram losses.
+        spec_l1 = self.spec_loss_l1(output_spec, target_spec)
+        spec_l2 = self.spec_loss_l2(output_spec, target_spec)
         
-        # Parameter loss with stability checks
-        if torch.isnan(predicted_params).any() or torch.isnan(target_params).any():
-            param_loss = torch.tensor(0.0, device=output_spec.device)
-            print("Warning: NaN detected in parameters, skipping parameter loss")
-        else:
-            param_loss = self.parameter_loss(predicted_params, target_params)
+        # Parameter loss (the ground-truth parameters are replicated for each time step)
+        param_loss_val = self.param_loss(predicted_params, target_params)
         
-        # Perceptual loss (direct mel spectrogram comparison)
+        # Perceptual loss: compute mel spectrograms.
+        # Use detach() to avoid grad issues.
         try:
-            # Since we're already working with mel spectrograms, we can compare them directly
-            perceptual_loss = self.spectrogram_loss(output_spec, target_spec)
+            mel_out = compute_mel_spectrogram(output_spec.detach().cpu().numpy()[0,0], sr=self.sr,
+                                              n_mels=self.n_mels, n_fft=self.n_fft, hop_length=self.hop_length)
+            mel_target = compute_mel_spectrogram(target_spec.detach().cpu().numpy()[0,0], sr=self.sr,
+                                                 n_mels=self.n_mels, n_fft=self.n_fft, hop_length=self.hop_length)
+            # Convert back to tensors for loss computation.
+            mel_out = torch.tensor(mel_out, dtype=torch.float32, device=output_spec.device)
+            mel_target = torch.tensor(mel_target, dtype=torch.float32, device=output_spec.device)
+            perceptual_loss_val = self.spec_loss_l1(mel_out, mel_target)
         except Exception as e:
             print(f"Error computing perceptual loss: {e}")
-            perceptual_loss = torch.tensor(0.0, device=output_spec.device)
+            perceptual_loss_val = torch.tensor(0.0, device=output_spec.device)
         
-        # Total loss with stability checks
-        total_loss = (
-            self.spectrogram_weight * spec_loss +
-            self.parameter_weight * param_loss +
-            self.perceptual_weight * perceptual_loss
-        )
-        
-        # Ensure total loss is finite
-        if torch.isnan(total_loss) or torch.isinf(total_loss):
-            print("Warning: NaN/Inf detected in total loss, resetting to 0")
-            total_loss = torch.tensor(0.0, device=output_spec.device)
+        total_loss = (self.spectrogram_weight * spec_l2 +
+                      self.parameter_weight * param_loss_val +
+                      self.perceptual_weight * perceptual_loss_val)
         
         return total_loss, {
-            'spectrogram_loss': spec_loss.item(),
-            'parameter_loss': param_loss.item(),
-            'perceptual_loss': perceptual_loss.item()
+            'spec_loss_l1': spec_l1.item(),
+            'spec_loss_l2': spec_l2.item(),
+            'parameter_loss': param_loss_val.item(),
+            'perceptual_loss': perceptual_loss_val.item(),
+            'total_loss': total_loss.item()
         }
 
-def save_loss_plot(train_losses, val_losses, filename):
-    """Save a plot of training and validation losses."""
-    plt.figure(figsize=(10, 5))
-    plt.plot(train_losses, label='Training Loss')
-    if val_losses:
-        plt.plot(val_losses, label='Validation Loss')
-    plt.xlabel('Epoch')
-    plt.ylabel('Loss')
-    plt.title('Training and Validation Loss')
-    plt.legend()
-    plt.grid(True)
+# ----------------------------
+# Loss Plotting Helper
+# ----------------------------
+def save_loss_plot(loss_history, filename):
+    epochs = range(1, len(loss_history['total']) + 1)
+    plt.figure(figsize=(14,10))
+    plt.subplot(2,2,1)
+    plt.plot(epochs, loss_history['total'], label='Total Loss', marker='o')
+    plt.xlabel('Epoch'); plt.ylabel('Total Loss'); plt.title('Total Loss'); plt.legend(); plt.grid(True)
+    plt.subplot(2,2,2)
+    plt.plot(epochs, loss_history['spec_loss_l2'], label='Spec L2 Loss', marker='o')
+    plt.xlabel('Epoch'); plt.ylabel('L2 Loss'); plt.title('Spectrogram L2 Loss'); plt.legend(); plt.grid(True)
+    plt.subplot(2,2,3)
+    plt.plot(epochs, loss_history['parameter_loss'], label='Parameter Loss', marker='o')
+    plt.xlabel('Epoch'); plt.ylabel('Parameter Loss'); plt.title('Parameter Loss'); plt.legend(); plt.grid(True)
+    plt.subplot(2,2,4)
+    plt.plot(epochs, loss_history['perceptual_loss'], label='Perceptual Loss', marker='o')
+    plt.xlabel('Epoch'); plt.ylabel('Perceptual Loss'); plt.title('Perceptual Loss'); plt.legend(); plt.grid(True)
+    plt.suptitle('Training Losses per Epoch', fontsize=16)
+    plt.tight_layout(rect=[0,0,1,0.95])
     plt.savefig(filename)
     plt.close()
 
+# ----------------------------
+# Training Epoch Function
+# ----------------------------
 def train_epoch(model, train_loader, optimizer, criterion, device):
     model.train()
     total_loss = 0.0
     num_batches = len(train_loader)
-    
-    for batch_idx, (inputs, targets) in enumerate(train_loader):
+    for batch_idx, (inputs, targets, gt_params) in enumerate(train_loader):
         inputs, targets = inputs.to(device), targets.to(device)
-        
+        gt_params = gt_params.to(device)  # shape: [batch, 10]
         optimizer.zero_grad()
+        # Forward pass: our model returns refined output, stage1 output, and predicted parameters.
+        refined_out, stage1_out, predicted_params_norm = model(inputs)
+        # Force refined_out to match targets (using cropping if necessary)
+        min_T = min(refined_out.shape[-1], targets.shape[-1])
+        refined_out = refined_out[..., :min_T]
+        targets = targets[..., :min_T]
         
-        # Forward pass
-        outputs, predicted_params = model(inputs)
+        # Expand ground truth parameters (normalized) to match time steps
+        T = predicted_params_norm.shape[1]
+        gt_params_expanded = gt_params.unsqueeze(1).expand(-1, T, -1)
         
-        # Ensure time dimensions match
-        min_time = min(outputs.shape[-1], targets.shape[-1])
-        outputs = outputs[..., :min_time]
-        targets = targets[..., :min_time]
-        
-        # Calculate loss
-        loss, _ = criterion(
-            outputs, 
-            targets,
-            predicted_params, 
-            predicted_params  # Using predicted params as target params since we don't have ground truth
-        )
-        
-        # Backward pass
+        loss, loss_components = criterion(refined_out, targets, predicted_params_norm, gt_params_expanded)
         loss.backward()
         optimizer.step()
-        
         total_loss += loss.item()
-        
-        # Print progress every 10% of batches
         if (batch_idx + 1) % max(1, num_batches // 10) == 0:
             avg_loss = total_loss / (batch_idx + 1)
-            print(f"Batch {batch_idx + 1}/{num_batches} - Loss: {avg_loss:.4f}")
-    
+            print(f"Batch {batch_idx+1}/{num_batches} - Avg Loss: {avg_loss:.4f} | " +
+                  f"Spec L1: {loss_components['spec_loss_l1']:.4f}, " +
+                  f"Spec L2: {loss_components['spec_loss_l2']:.4f}, " +
+                  f"Param: {loss_components['parameter_loss']:.4f}, " +
+                  f"Perc: {loss_components['perceptual_loss']:.4f}")
     return total_loss / num_batches
 
-def train_model(model, train_loader, val_loader, device, num_epochs=50,
-                learning_rate=1e-4, weight_decay=1e-5):
-    """Train the cascaded mastering model with improved monitoring."""
-    # Initialize log directory
+# ----------------------------
+# Training Loop
+# ----------------------------
+def train_model(model, train_loader, val_loader, device, num_epochs=100,
+                learning_rate=5e-5, weight_decay=1e-5):
     timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
-    log_dir = os.path.join(project_root, "logs", f"training_{timestamp}")
+    log_dir = os.path.join(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")), "logs", f"training_{timestamp}")
     os.makedirs(log_dir, exist_ok=True)
-    
-    # Initialize loss function
     criterion = AudioMasteringLoss()
-    
-    # Initialize optimizer
-    optimizer = optim.Adam(model.parameters(),
-                        lr=learning_rate,
-                        weight_decay=weight_decay)
-    
-    # Learning rate scheduler
-    scheduler = optim.lr_scheduler.ReduceLROnPlateau(
-        optimizer,
-        mode='min',
-        factor=0.5,
-        patience=3
-    )
-    
-    # Training loop
+    optimizer = optim.Adam(model.parameters(), lr=learning_rate, weight_decay=weight_decay)
+    scheduler = optim.lr_scheduler.ReduceLROnPlateau(optimizer, mode='min', factor=0.5, patience=3, verbose=True)
     best_val_loss = float('inf')
-    checkpoint_dir = os.path.join(project_root, "checkpoints")
+    checkpoint_dir = os.path.join(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")), "checkpoints")
     os.makedirs(checkpoint_dir, exist_ok=True)
-    
+    loss_history = {
+        'total': [],
+        'spec_loss_l1': [],
+        'spec_loss_l2': [],
+        'parameter_loss': [],
+        'perceptual_loss': [],
+        'val': []
+    }
     train_losses = []
     val_losses = []
     patience_counter = 0
     early_stopping_patience = 10
-    
+
     print("\nStarting training...")
     print(f"Initial learning rate: {learning_rate:.2e}")
     print(f"Training on {len(train_loader.dataset)} samples")
     print(f"Validating on {len(val_loader.dataset)} samples")
     
     for epoch in range(num_epochs):
-        # Training phase
         model.train()
         train_loss = train_epoch(model, train_loader, optimizer, criterion, device)
         train_losses.append(train_loss)
+        loss_history['total'].append(train_loss)
         
-        # Validation phase
         model.eval()
         val_loss = 0.0
+        val_comp = {'spec_loss_l1': 0.0, 'spec_loss_l2': 0.0, 'parameter_loss': 0.0, 'perceptual_loss': 0.0}
         with torch.no_grad():
-            for degraded_spec, target_spec in val_loader:
-                degraded_spec = degraded_spec.to(device)
-                target_spec = target_spec.to(device)
-                
-                try:
-                    output_spec, predicted_params = model(degraded_spec)
-                    loss, _ = criterion(output_spec, target_spec, predicted_params, predicted_params)
-                    val_loss += loss.item()
-                except Exception as e:
-                    print(f"Error during validation: {e}")
-                    continue
-        
+            for inputs, targets, gt_params in val_loader:
+                inputs, targets = inputs.to(device), targets.to(device)
+                gt_params = gt_params.to(device)
+                refined_out, stage1_out, predicted_params_norm = model(inputs)
+                min_T = min(refined_out.shape[-1], targets.shape[-1])
+                refined_out = refined_out[..., :min_T]
+                targets = targets[..., :min_T]
+                T = predicted_params_norm.shape[1]
+                gt_params_expanded = gt_params.unsqueeze(1).expand(-1, T, -1)
+                loss, loss_components = criterion(refined_out, targets, predicted_params_norm, gt_params_expanded)
+                val_loss += loss.item()
+                for key in val_comp:
+                    val_comp[key] += loss_components.get(key, 0)
         val_loss /= len(val_loader)
+        loss_history['val'].append(val_loss)
+        for key in ['spec_loss_l1', 'spec_loss_l2', 'parameter_loss', 'perceptual_loss']:
+            loss_history[key].append(val_comp[key] / len(val_loader))
         val_losses.append(val_loss)
-        
-        # Update learning rate
         scheduler.step(val_loss)
         current_lr = optimizer.param_groups[0]['lr']
-        
-        # Print epoch summary
-        print(f"\nEpoch {epoch + 1}/{num_epochs}:")
-        print(f"  Train Loss: {train_loss:.4f}")
-        print(f"  Val Loss: {val_loss:.4f}")
+        print(f"\nEpoch {epoch+1}/{num_epochs}:")
+        print(f"  Training Loss: {train_loss:.4f}")
+        print(f"  Validation Loss: {val_loss:.4f}")
+        print(f"    (Spec L1: {loss_history['spec_loss_l1'][-1]:.4f}, Spec L2: {loss_history['spec_loss_l2'][-1]:.4f}, " +
+              f"Param: {loss_history['parameter_loss'][-1]:.4f}, Perc: {loss_history['perceptual_loss'][-1]:.4f})")
         print(f"  Learning Rate: {current_lr:.2e}")
-        
-        # Save model if it's the best so far
         if val_loss < best_val_loss:
             best_val_loss = val_loss
-            torch.save({
-                'epoch': epoch,
-                'model_state_dict': model.state_dict(),
-                'optimizer_state_dict': optimizer.state_dict(),
-                'val_loss': val_loss,
-            }, os.path.join(checkpoint_dir, 'best_model.pt'))
+            torch.save({'epoch': epoch,
+                        'model_state_dict': model.state_dict(),
+                        'optimizer_state_dict': optimizer.state_dict(),
+                        'val_loss': val_loss},
+                       os.path.join(checkpoint_dir, 'best_model.pt'))
             print("  New best model saved!")
             patience_counter = 0
         else:
             patience_counter += 1
             print(f"  No improvement for {patience_counter} epochs")
-        
-        # Save latest model checkpoint
-        torch.save({
-            'epoch': epoch,
-            'model_state_dict': model.state_dict(),
-            'optimizer_state_dict': optimizer.state_dict(),
-            'val_loss': val_loss,
-        }, os.path.join(checkpoint_dir, f'cascaded_model_epoch_{epoch+1}.pt'))
-        
-        # Save loss plot
-        save_loss_plot(
-            train_losses, 
-            val_losses, 
-            os.path.join(log_dir, 'loss_plot.png')
-        )
-        
-        # Early stopping
+        torch.save({'epoch': epoch,
+                    'model_state_dict': model.state_dict(),
+                    'optimizer_state_dict': optimizer.state_dict(),
+                    'val_loss': val_loss},
+                   os.path.join(checkpoint_dir, f'cascaded_model_epoch_{epoch+1}.pt'))
+        loss_plot_path = os.path.join(log_dir, 'loss_plot.png')
+        save_loss_plot(loss_history, loss_plot_path)
         if patience_counter >= early_stopping_patience:
             print(f"\nEarly stopping triggered after {epoch+1} epochs")
             break
@@ -312,99 +263,53 @@ def train_model(model, train_loader, val_loader, device, num_epochs=50,
     return train_losses, val_losses
 
 def main():
-    # Set project root and path
-    global project_root
     project_root = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
     sys.path.append(project_root)
     print("Project root:", project_root)
     
-    # Hyperparameters
-    num_epochs = 30      # Increased from 10 to allow better convergence
-    batch_size = 2       # Small batch size for stability
-    learning_rate = 5e-5 # Adjusted learning rate
-    weight_decay = 1e-5  # Regularization to prevent overfitting
-    
-    # Audio parameters
+    num_epochs = 100  # Increase epochs for overnight training.
+    batch_size = 2
+    learning_rate = 5e-5
+    weight_decay = 1e-5
     sample_rate = 44100
     hop_length = 512
     n_fft = 2048
     n_mels = 128
-    ir_length = 20  # IR length in time frames for reverb
+    ir_length = 20
     
-    # Dataset location
     dataset_dir = os.path.join(project_root, "experiments", "output_full", "output_audio")
     dataset_dir = os.path.abspath(dataset_dir)
     print("Dataset directory:", dataset_dir)
     
-    # Creating the Dataset
     dataset = PairedAudioDataset(
         audio_dir=dataset_dir,
         sr=sample_rate,
         transform=compute_mel_spectrogram,
         mode="spectrogram"
     )
+    print(f"Spectrogram mode, dataset length: {len(dataset)}")
+    if len(dataset) > 0:
+        sample_input, sample_target, sample_params = dataset[0]
+        print("Input spectrogram shape:", sample_input.shape)
+        print("Target spectrogram shape:", sample_target.shape)
+        print("Normalized parameter vector:", sample_params)
     
-    print(f"Dataset length: {len(dataset)}")
-    
-    # Split dataset into training and validation (80/20 split)
     train_size = int(0.8 * len(dataset))
     val_size = len(dataset) - train_size
-    train_dataset, val_dataset = random_split(
-        dataset, [train_size, val_size]
-    )
+    train_dataset, val_dataset = random_split(dataset, [train_size, val_size])
     
-    # Create data loaders
-    train_loader = DataLoader(
-        train_dataset,
-        batch_size=batch_size,
-        shuffle=True,
-        num_workers=0,
-        collate_fn=collate_pad
-    )
+    train_loader = DataLoader(train_dataset, batch_size=batch_size, shuffle=True, num_workers=0, collate_fn=collate_pad)
+    val_loader = DataLoader(val_dataset, batch_size=batch_size, shuffle=False, num_workers=0, collate_fn=collate_pad)
     
-    val_loader = DataLoader(
-        val_dataset,
-        batch_size=batch_size,
-        shuffle=False,
-        num_workers=0,
-        collate_fn=collate_pad
-    )
-    
-    # Initialize models
-    unet = UNet(in_channels=1, out_channels=1)
-    lstm = LSTMForecasting(input_size=1, hidden_size=32, num_layers=1)
-    
-    # Initialize weights properly
-    for name, param in lstm.named_parameters():
-        if 'weight_ih' in name:
-            nn.init.xavier_uniform_(param)
-        elif 'weight_hh' in name:
-            nn.init.orthogonal_(param)
-        elif 'bias' in name:
-            nn.init.constant_(param, 0.0)
-    
-    # Create the cascaded model
-    model = CascadedMastering(
-        unet, lstm, sr=sample_rate, hop_length=hop_length, ir_length=ir_length
-    )
-    
-    # Set device
+    model = TwoStageUNet(sr=sample_rate, hop_length=hop_length, in_channels=1, out_channels=1, base_features=64,
+                          lstm_hidden=32, num_layers=1, num_params=10)
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     model = model.to(device)
     print("Using device:", device)
-    
-    # Train the model
     print("Starting training...")
-    train_losses, val_losses = train_model(
-        model,
-        train_loader,
-        val_loader,
-        device,
-        num_epochs=num_epochs,
-        learning_rate=learning_rate,
-        weight_decay=weight_decay
-    )
-    
+    train_losses, val_losses = train_model(model, train_loader, val_loader, device,
+                                           num_epochs=num_epochs, learning_rate=learning_rate,
+                                           weight_decay=weight_decay)
     print("Training complete.")
 
 if __name__ == "__main__":

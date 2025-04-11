@@ -1,0 +1,532 @@
+Dataset length: 365
+Using device: cuda
+Starting training...
+C:\Users\takak\anaconda3\envs\thesis_env\lib\site-packages\torch\optim\lr_scheduler.py:62: UserWarning: The verbose parameter isr.py:62:Training on 292 samples
+Validating on 73 samples
+Batch 14/146 - Avg Loss: 0.1429 | Spec L1: 0.2111, Spec L2: 0.0601, Param: 0.1273, Perc: 0.2111
+Batch 28/146 - Avg Loss: 0.1303 | Spec L1: 0.1006, Spec L2: 0.0181, Param: 0.1177, Perc: 0.1006
+Batch 42/146 - Avg Loss: 0.1238 | Spec L1: 0.1876, Spec L2: 0.0585, Param: 0.1196, Perc: 0.1876
+Batch 56/146 - Avg Loss: 0.1177 | Spec L1: 0.1548, Spec L2: 0.0372, Param: 0.1322, Perc: 0.1548
+Batch 70/146 - Avg Loss: 0.1097 | Spec L1: 0.1095, Spec L2: 0.0223, Param: 0.1268, Perc: 0.1095
+Batch 84/146 - Avg Loss: 0.1068 | Spec L1: 0.1497, Spec L2: 0.0670, Param: 0.1161, Perc: 0.1497
+Batch 98/146 - Avg Loss: 0.1047 | Spec L1: 0.1761, Spec L2: 0.0421, Param: 0.1275, Perc: 0.1761
+Batch 112/146 - Avg Loss: 0.1022 | Spec L1: 0.1093, Spec L2: 0.0198, Param: 0.1250, Perc: 0.1093
+Batch 126/146 - Avg Loss: 0.1000 | Spec L1: 0.1333, Spec L2: 0.0295, Param: 0.1135, Perc: 0.1333
+Batch 140/146 - Avg Loss: 0.0995 | Spec L1: 0.1905, Spec L2: 0.0733, Param: 0.1377, Perc: 0.1905
+
+Epoch 1/30:
+  Training Loss: 0.0992
+  Validation Loss: 0.1886
+    (Spec L1: 0.2857, Spec L2: 0.1354, Param: 0.1224, Perc: 0.2857)
+  Learning Rate: 5.00e-05
+  New best model saved!
+Batch 14/146 - Avg Loss: 0.0835 | Spec L1: 0.1192, Spec L2: 0.0218, Param: 0.1283, Perc: 0.1192
+Batch 28/146 - Avg Loss: 0.0879 | Spec L1: 0.1204, Spec L2: 0.0238, Param: 0.1289, Perc: 0.1204
+Batch 42/146 - Avg Loss: 0.0867 | Spec L1: 0.1224, Spec L2: 0.0227, Param: 0.1202, Perc: 0.1224
+Batch 56/146 - Avg Loss: 0.0858 | Spec L1: 0.2270, Spec L2: 0.0626, Param: 0.1138, Perc: 0.2270
+Batch 70/146 - Avg Loss: 0.0836 | Spec L1: 0.0872, Spec L2: 0.0129, Param: 0.1302, Perc: 0.0872
+Batch 84/146 - Avg Loss: 0.0826 | Spec L1: 0.1154, Spec L2: 0.0214, Param: 0.1319, Perc: 0.1154
+Batch 98/146 - Avg Loss: 0.0822 | Spec L1: 0.0952, Spec L2: 0.0156, Param: 0.1293, Perc: 0.0952
+Batch 112/146 - Avg Loss: 0.0807 | Spec L1: 0.1092, Spec L2: 0.0210, Param: 0.1231, Perc: 0.1092
+Batch 126/146 - Avg Loss: 0.0805 | Spec L1: 0.1048, Spec L2: 0.0190, Param: 0.1275, Perc: 0.1048
+Batch 140/146 - Avg Loss: 0.0800 | Spec L1: 0.1223, Spec L2: 0.0259, Param: 0.1252, Perc: 0.1223
+
+Epoch 2/30:
+  Training Loss: 0.0797
+  Validation Loss: 0.0863
+    (Spec L1: 0.1375, Spec L2: 0.0325, Param: 0.1203, Perc: 0.1375)
+  Learning Rate: 5.00e-05
+  New best model saved!
+Batch 14/146 - Avg Loss: 0.0761 | Spec L1: 0.1462, Spec L2: 0.0328, Param: 0.1123, Perc: 0.1462
+Batch 28/146 - Avg Loss: 0.0757 | Spec L1: 0.0936, Spec L2: 0.0155, Param: 0.1362, Perc: 0.0936
+Batch 42/146 - Avg Loss: 0.0750 | Spec L1: 0.0973, Spec L2: 0.0171, Param: 0.1113, Perc: 0.0973
+Batch 56/146 - Avg Loss: 0.0748 | Spec L1: 0.1220, Spec L2: 0.0248, Param: 0.1311, Perc: 0.1220
+Batch 70/146 - Avg Loss: 0.0763 | Spec L1: 0.0935, Spec L2: 0.0147, Param: 0.1456, Perc: 0.0935
+Batch 84/146 - Avg Loss: 0.0746 | Spec L1: 0.1099, Spec L2: 0.0194, Param: 0.1261, Perc: 0.1099
+Batch 98/146 - Avg Loss: 0.0735 | Spec L1: 0.0760, Spec L2: 0.0104, Param: 0.1143, Perc: 0.0760
+Batch 112/146 - Avg Loss: 0.0737 | Spec L1: 0.0856, Spec L2: 0.0135, Param: 0.1317, Perc: 0.0856
+Batch 126/146 - Avg Loss: 0.0734 | Spec L1: 0.1009, Spec L2: 0.0170, Param: 0.1262, Perc: 0.1009
+Batch 140/146 - Avg Loss: 0.0733 | Spec L1: 0.1202, Spec L2: 0.0243, Param: 0.1172, Perc: 0.1202
+
+Epoch 3/30:
+  Training Loss: 0.0734
+  Validation Loss: 0.0698
+    (Spec L1: 0.1069, Spec L2: 0.0192, Param: 0.1167, Perc: 0.1069)
+  Learning Rate: 5.00e-05
+  New best model saved!
+Batch 14/146 - Avg Loss: 0.0714 | Spec L1: 0.1336, Spec L2: 0.0248, Param: 0.1191, Perc: 0.1336
+Batch 28/146 - Avg Loss: 0.0714 | Spec L1: 0.0863, Spec L2: 0.0134, Param: 0.1099, Perc: 0.0863
+Batch 42/146 - Avg Loss: 0.0706 | Spec L1: 0.1113, Spec L2: 0.0209, Param: 0.1121, Perc: 0.1113
+Batch 56/146 - Avg Loss: 0.0698 | Spec L1: 0.0867, Spec L2: 0.0130, Param: 0.1178, Perc: 0.0867
+Batch 70/146 - Avg Loss: 0.0701 | Spec L1: 0.0901, Spec L2: 0.0134, Param: 0.1177, Perc: 0.0901
+Batch 84/146 - Avg Loss: 0.0704 | Spec L1: 0.0802, Spec L2: 0.0116, Param: 0.1090, Perc: 0.0802
+Batch 98/146 - Avg Loss: 0.0711 | Spec L1: 0.1311, Spec L2: 0.0272, Param: 0.1169, Perc: 0.1311
+Batch 112/146 - Avg Loss: 0.0711 | Spec L1: 0.1472, Spec L2: 0.0317, Param: 0.1077, Perc: 0.1472
+Batch 126/146 - Avg Loss: 0.0704 | Spec L1: 0.0761, Spec L2: 0.0104, Param: 0.1184, Perc: 0.0761
+Batch 140/146 - Avg Loss: 0.0701 | Spec L1: 0.1151, Spec L2: 0.0214, Param: 0.1041, Perc: 0.1151
+
+Epoch 4/30:
+  Training Loss: 0.0705
+  Validation Loss: 0.0659
+    (Spec L1: 0.0993, Spec L2: 0.0172, Param: 0.1134, Perc: 0.0993)
+  Learning Rate: 5.00e-05
+  New best model saved!
+Batch 14/146 - Avg Loss: 0.0698 | Spec L1: 0.1017, Spec L2: 0.0186, Param: 0.1053, Perc: 0.1017
+Batch 28/146 - Avg Loss: 0.0686 | Spec L1: 0.0948, Spec L2: 0.0149, Param: 0.1020, Perc: 0.0948
+Batch 42/146 - Avg Loss: 0.0680 | Spec L1: 0.0866, Spec L2: 0.0133, Param: 0.0977, Perc: 0.0866
+Batch 56/146 - Avg Loss: 0.0673 | Spec L1: 0.0799, Spec L2: 0.0112, Param: 0.1062, Perc: 0.0799
+Batch 70/146 - Avg Loss: 0.0669 | Spec L1: 0.0854, Spec L2: 0.0122, Param: 0.1191, Perc: 0.0854
+Batch 84/146 - Avg Loss: 0.0667 | Spec L1: 0.0916, Spec L2: 0.0146, Param: 0.1110, Perc: 0.0916
+Batch 98/146 - Avg Loss: 0.0664 | Spec L1: 0.0802, Spec L2: 0.0109, Param: 0.1189, Perc: 0.0802
+Batch 112/146 - Avg Loss: 0.0660 | Spec L1: 0.0853, Spec L2: 0.0128, Param: 0.1201, Perc: 0.0853
+Batch 126/146 - Avg Loss: 0.0662 | Spec L1: 0.0922, Spec L2: 0.0146, Param: 0.1088, Perc: 0.0922
+Batch 140/146 - Avg Loss: 0.0661 | Spec L1: 0.0758, Spec L2: 0.0107, Param: 0.1032, Perc: 0.0758
+
+Epoch 5/30:
+  Training Loss: 0.0662
+  Validation Loss: 0.0610
+    (Spec L1: 0.0914, Spec L2: 0.0148, Param: 0.1080, Perc: 0.0914)
+  Learning Rate: 5.00e-05
+  New best model saved!
+  Learning Rate: 5.00e-05
+  New best model saved!
+  New best model saved!
+Batch 14/146 - Avg Loss: 0.0654 | Spec L1: 0.0997, Spec L2: 0.0157, Param: 0.1089, Perc: 0.0997
+Batch 28/146 - Avg Loss: 0.0660 | Spec L1: 0.1410, Spec L2: 0.0277, Param: 0.1163, Perc: 0.1410
+Batch 28/146 - Avg Loss: 0.0660 | Spec L1: 0.1410, Spec L2: 0.0277, Param: 0.1163, Perc: 0.1410
+Batch 42/146 - Avg Loss: 0.0653 | Spec L1: 0.0803, Spec L2: 0.0114, Param: 0.1090, Perc: 0.0803
+Batch 42/146 - Avg Loss: 0.0653 | Spec L1: 0.0803, Spec L2: 0.0114, Param: 0.1090, Perc: 0.0803
+Batch 56/146 - Avg Loss: 0.0642 | Spec L1: 0.0867, Spec L2: 0.0127, Param: 0.1172, Perc: 0.0867
+Batch 70/146 - Avg Loss: 0.0645 | Spec L1: 0.0895, Spec L2: 0.0140, Param: 0.1064, Perc: 0.0895
+Batch 84/146 - Avg Loss: 0.0638 | Spec L1: 0.0871, Spec L2: 0.0122, Param: 0.1046, Perc: 0.0871
+Batch 98/146 - Avg Loss: 0.0634 | Spec L1: 0.1418, Spec L2: 0.0273, Param: 0.0918, Perc: 0.1418
+Batch 112/146 - Avg Loss: 0.0631 | Spec L1: 0.1203, Spec L2: 0.0251, Param: 0.1056, Perc: 0.1203
+Batch 126/146 - Avg Loss: 0.0626 | Spec L1: 0.0956, Spec L2: 0.0167, Param: 0.0978, Perc: 0.0956
+Batch 140/146 - Avg Loss: 0.0625 | Spec L1: 0.0734, Spec L2: 0.0089, Param: 0.1048, Perc: 0.0734
+
+Epoch 6/30:
+  Training Loss: 0.0623
+  Validation Loss: 0.0581
+    (Spec L1: 0.0901, Spec L2: 0.0144, Param: 0.0999, Perc: 0.0901)
+  Learning Rate: 5.00e-05
+  New best model saved!
+Batch 14/146 - Avg Loss: 0.0591 | Spec L1: 0.0749, Spec L2: 0.0107, Param: 0.1103, Perc: 0.0749
+Batch 28/146 - Avg Loss: 0.0570 | Spec L1: 0.0831, Spec L2: 0.0121, Param: 0.0952, Perc: 0.0831
+Batch 42/146 - Avg Loss: 0.0572 | Spec L1: 0.0878, Spec L2: 0.0127, Param: 0.0940, Perc: 0.0878
+Batch 56/146 - Avg Loss: 0.0574 | Spec L1: 0.0881, Spec L2: 0.0133, Param: 0.0935, Perc: 0.0881
+Batch 70/146 - Avg Loss: 0.0574 | Spec L1: 0.0982, Spec L2: 0.0177, Param: 0.0916, Perc: 0.0982
+Batch 84/146 - Avg Loss: 0.0574 | Spec L1: 0.1073, Spec L2: 0.0194, Param: 0.1006, Perc: 0.1073
+Batch 98/146 - Avg Loss: 0.0571 | Spec L1: 0.0904, Spec L2: 0.0143, Param: 0.0830, Perc: 0.0904
+Batch 112/146 - Avg Loss: 0.0568 | Spec L1: 0.0925, Spec L2: 0.0134, Param: 0.0924, Perc: 0.0925
+Batch 126/146 - Avg Loss: 0.0566 | Spec L1: 0.0970, Spec L2: 0.0147, Param: 0.0855, Perc: 0.0970
+Batch 140/146 - Avg Loss: 0.0558 | Spec L1: 0.0743, Spec L2: 0.0103, Param: 0.0847, Perc: 0.0743
+
+Epoch 7/30:
+  Training Loss: 0.0563
+  Validation Loss: 0.0523
+    (Spec L1: 0.0880, Spec L2: 0.0137, Param: 0.0837, Perc: 0.0880)
+  Learning Rate: 5.00e-05
+  New best model saved!
+Batch 14/146 - Avg Loss: 0.0507 | Spec L1: 0.0790, Spec L2: 0.0119, Param: 0.0739, Perc: 0.0790
+Batch 28/146 - Avg Loss: 0.0501 | Spec L1: 0.0860, Spec L2: 0.0119, Param: 0.0737, Perc: 0.0860
+Batch 42/146 - Avg Loss: 0.0511 | Spec L1: 0.1059, Spec L2: 0.0187, Param: 0.0842, Perc: 0.1059
+Batch 56/146 - Avg Loss: 0.0525 | Spec L1: 0.1066, Spec L2: 0.0213, Param: 0.0828, Perc: 0.1066
+Batch 70/146 - Avg Loss: 0.0522 | Spec L1: 0.0821, Spec L2: 0.0115, Param: 0.0763, Perc: 0.0821
+Batch 84/146 - Avg Loss: 0.0525 | Spec L1: 0.0877, Spec L2: 0.0139, Param: 0.0752, Perc: 0.0877
+Batch 98/146 - Avg Loss: 0.0523 | Spec L1: 0.0815, Spec L2: 0.0114, Param: 0.0837, Perc: 0.0815
+Batch 112/146 - Avg Loss: 0.0524 | Spec L1: 0.0874, Spec L2: 0.0128, Param: 0.0817, Perc: 0.0874
+Batch 126/146 - Avg Loss: 0.0519 | Spec L1: 0.0828, Spec L2: 0.0124, Param: 0.0682, Perc: 0.0828
+Batch 140/146 - Avg Loss: 0.0517 | Spec L1: 0.0846, Spec L2: 0.0122, Param: 0.0920, Perc: 0.0846
+
+Epoch 8/30:
+  Training Loss: 0.0516
+  Validation Loss: 0.0485
+    (Spec L1: 0.0906, Spec L2: 0.0142, Param: 0.0680, Perc: 0.0906)
+  Learning Rate: 5.00e-05
+  New best model saved!
+Batch 14/146 - Avg Loss: 0.0439 | Spec L1: 0.0679, Spec L2: 0.0078, Param: 0.0737, Perc: 0.0679
+Batch 28/146 - Avg Loss: 0.0450 | Spec L1: 0.0900, Spec L2: 0.0132, Param: 0.0705, Perc: 0.0900
+Batch 42/146 - Avg Loss: 0.0456 | Spec L1: 0.0792, Spec L2: 0.0116, Param: 0.0602, Perc: 0.0792
+Batch 56/146 - Avg Loss: 0.0465 | Spec L1: 0.1136, Spec L2: 0.0219, Param: 0.0606, Perc: 0.1136
+Batch 70/146 - Avg Loss: 0.0461 | Spec L1: 0.0697, Spec L2: 0.0082, Param: 0.0698, Perc: 0.0697
+Batch 84/146 - Avg Loss: 0.0457 | Spec L1: 0.0744, Spec L2: 0.0091, Param: 0.0606, Perc: 0.0744
+Batch 98/146 - Avg Loss: 0.0461 | Spec L1: 0.0805, Spec L2: 0.0124, Param: 0.0572, Perc: 0.0805
+Batch 112/146 - Avg Loss: 0.0461 | Spec L1: 0.0816, Spec L2: 0.0115, Param: 0.0531, Perc: 0.0816
+Batch 126/146 - Avg Loss: 0.0459 | Spec L1: 0.0966, Spec L2: 0.0141, Param: 0.0617, Perc: 0.0966
+Batch 140/146 - Avg Loss: 0.0457 | Spec L1: 0.1037, Spec L2: 0.0177, Param: 0.0665, Perc: 0.1037
+
+Epoch 9/30:
+  Training Loss: 0.0459
+  Validation Loss: 0.0464
+    (Spec L1: 0.0958, Spec L2: 0.0152, Param: 0.0553, Perc: 0.0958)
+  Learning Rate: 5.00e-05
+  New best model saved!
+Batch 14/146 - Avg Loss: 0.0445 | Spec L1: 0.0682, Spec L2: 0.0080, Param: 0.0521, Perc: 0.0682
+Batch 28/146 - Avg Loss: 0.0452 | Spec L1: 0.0919, Spec L2: 0.0132, Param: 0.0620, Perc: 0.0919
+Batch 42/146 - Avg Loss: 0.0432 | Spec L1: 0.0787, Spec L2: 0.0103, Param: 0.0498, Perc: 0.0787
+Batch 56/146 - Avg Loss: 0.0422 | Spec L1: 0.0845, Spec L2: 0.0116, Param: 0.0448, Perc: 0.0845
+Batch 70/146 - Avg Loss: 0.0418 | Spec L1: 0.0760, Spec L2: 0.0097, Param: 0.0493, Perc: 0.0760
+Batch 84/146 - Avg Loss: 0.0418 | Spec L1: 0.0802, Spec L2: 0.0109, Param: 0.0509, Perc: 0.0802
+Batch 98/146 - Avg Loss: 0.0417 | Spec L1: 0.0744, Spec L2: 0.0093, Param: 0.0512, Perc: 0.0744
+Batch 112/146 - Avg Loss: 0.0413 | Spec L1: 0.0998, Spec L2: 0.0169, Param: 0.0447, Perc: 0.0998
+Batch 126/146 - Avg Loss: 0.0416 | Spec L1: 0.0933, Spec L2: 0.0148, Param: 0.0431, Perc: 0.0933
+Batch 140/146 - Avg Loss: 0.0415 | Spec L1: 0.0915, Spec L2: 0.0140, Param: 0.0494, Perc: 0.0915
+
+Epoch 10/30:
+  Training Loss: 0.0413
+  Validation Loss: 0.0397
+    (Spec L1: 0.0867, Spec L2: 0.0135, Param: 0.0431, Perc: 0.0867)
+  Learning Rate: 5.00e-05
+  New best model saved!
+Batch 14/146 - Avg Loss: 0.0370 | Spec L1: 0.0729, Spec L2: 0.0100, Param: 0.0435, Perc: 0.0729
+Batch 28/146 - Avg Loss: 0.0382 | Spec L1: 0.0940, Spec L2: 0.0150, Param: 0.0321, Perc: 0.0940
+Batch 42/146 - Avg Loss: 0.0381 | Spec L1: 0.0814, Spec L2: 0.0113, Param: 0.0355, Perc: 0.0814
+Batch 56/146 - Avg Loss: 0.0390 | Spec L1: 0.0782, Spec L2: 0.0108, Param: 0.0414, Perc: 0.0782
+Batch 70/146 - Avg Loss: 0.0383 | Spec L1: 0.0660, Spec L2: 0.0071, Param: 0.0350, Perc: 0.0660
+Batch 84/146 - Avg Loss: 0.0390 | Spec L1: 0.0871, Spec L2: 0.0123, Param: 0.0376, Perc: 0.0871
+Batch 98/146 - Avg Loss: 0.0389 | Spec L1: 0.0712, Spec L2: 0.0088, Param: 0.0429, Perc: 0.0712
+Batch 112/146 - Avg Loss: 0.0382 | Spec L1: 0.0719, Spec L2: 0.0093, Param: 0.0443, Perc: 0.0719
+Batch 126/146 - Avg Loss: 0.0376 | Spec L1: 0.0534, Spec L2: 0.0050, Param: 0.0262, Perc: 0.0534
+Batch 140/146 - Avg Loss: 0.0376 | Spec L1: 0.0829, Spec L2: 0.0114, Param: 0.0435, Perc: 0.0829
+
+Epoch 11/30:
+  Training Loss: 0.0375
+  Validation Loss: 0.0364
+    (Spec L1: 0.0856, Spec L2: 0.0129, Param: 0.0340, Perc: 0.0856)
+  Learning Rate: 5.00e-05
+  New best model saved!
+Batch 14/146 - Avg Loss: 0.0352 | Spec L1: 0.0755, Spec L2: 0.0100, Param: 0.0379, Perc: 0.0755
+Batch 28/146 - Avg Loss: 0.0361 | Spec L1: 0.1109, Spec L2: 0.0216, Param: 0.0396, Perc: 0.1109
+Batch 42/146 - Avg Loss: 0.0353 | Spec L1: 0.0723, Spec L2: 0.0089, Param: 0.0276, Perc: 0.0723
+Batch 56/146 - Avg Loss: 0.0365 | Spec L1: 0.1089, Spec L2: 0.0198, Param: 0.0240, Perc: 0.1089
+Batch 70/146 - Avg Loss: 0.0369 | Spec L1: 0.0739, Spec L2: 0.0092, Param: 0.0352, Perc: 0.0739
+Batch 84/146 - Avg Loss: 0.0365 | Spec L1: 0.0847, Spec L2: 0.0120, Param: 0.0250, Perc: 0.0847
+Batch 98/146 - Avg Loss: 0.0369 | Spec L1: 0.0560, Spec L2: 0.0055, Param: 0.0352, Perc: 0.0560
+Batch 112/146 - Avg Loss: 0.0363 | Spec L1: 0.0718, Spec L2: 0.0088, Param: 0.0242, Perc: 0.0718
+Batch 126/146 - Avg Loss: 0.0356 | Spec L1: 0.0736, Spec L2: 0.0087, Param: 0.0256, Perc: 0.0736
+Batch 140/146 - Avg Loss: 0.0354 | Spec L1: 0.0884, Spec L2: 0.0128, Param: 0.0279, Perc: 0.0884
+
+Epoch 12/30:
+  Training Loss: 0.0354
+  Validation Loss: 0.0349
+    (Spec L1: 0.0860, Spec L2: 0.0134, Param: 0.0279, Perc: 0.0860)
+  Learning Rate: 5.00e-05
+  New best model saved!
+Batch 14/146 - Avg Loss: 0.0349 | Spec L1: 0.1049, Spec L2: 0.0202, Param: 0.0257, Perc: 0.1049
+Batch 28/146 - Avg Loss: 0.0350 | Spec L1: 0.0932, Spec L2: 0.0155, Param: 0.0255, Perc: 0.0932
+Batch 42/146 - Avg Loss: 0.0363 | Spec L1: 0.1163, Spec L2: 0.0205, Param: 0.0306, Perc: 0.1163
+Batch 56/146 - Avg Loss: 0.0359 | Spec L1: 0.0954, Spec L2: 0.0144, Param: 0.0212, Perc: 0.0954
+Batch 70/146 - Avg Loss: 0.0352 | Spec L1: 0.0909, Spec L2: 0.0135, Param: 0.0286, Perc: 0.0909
+Batch 84/146 - Avg Loss: 0.0344 | Spec L1: 0.0761, Spec L2: 0.0103, Param: 0.0245, Perc: 0.0761
+Batch 98/146 - Avg Loss: 0.0338 | Spec L1: 0.0652, Spec L2: 0.0072, Param: 0.0208, Perc: 0.0652
+Batch 112/146 - Avg Loss: 0.0338 | Spec L1: 0.0758, Spec L2: 0.0104, Param: 0.0204, Perc: 0.0758
+Batch 126/146 - Avg Loss: 0.0338 | Spec L1: 0.0741, Spec L2: 0.0089, Param: 0.0196, Perc: 0.0741
+Batch 140/146 - Avg Loss: 0.0341 | Spec L1: 0.0802, Spec L2: 0.0108, Param: 0.0294, Perc: 0.0802
+
+Epoch 13/30:
+  Training Loss: 0.0340
+  Validation Loss: 0.0344
+    (Spec L1: 0.0863, Spec L2: 0.0137, Param: 0.0250, Perc: 0.0863)
+  Learning Rate: 5.00e-05
+  New best model saved!
+Batch 14/146 - Avg Loss: 0.0345 | Spec L1: 0.0824, Spec L2: 0.0122, Param: 0.0288, Perc: 0.0824
+Batch 28/146 - Avg Loss: 0.0338 | Spec L1: 0.0696, Spec L2: 0.0084, Param: 0.0437, Perc: 0.0696
+Batch 42/146 - Avg Loss: 0.0333 | Spec L1: 0.1085, Spec L2: 0.0194, Param: 0.0188, Perc: 0.1085
+Batch 56/146 - Avg Loss: 0.0331 | Spec L1: 0.0764, Spec L2: 0.0104, Param: 0.0208, Perc: 0.0764
+Batch 70/146 - Avg Loss: 0.0330 | Spec L1: 0.1080, Spec L2: 0.0187, Param: 0.0231, Perc: 0.1080
+Batch 84/146 - Avg Loss: 0.0331 | Spec L1: 0.0847, Spec L2: 0.0119, Param: 0.0262, Perc: 0.0847
+Batch 98/146 - Avg Loss: 0.0330 | Spec L1: 0.0896, Spec L2: 0.0126, Param: 0.0290, Perc: 0.0896
+Batch 112/146 - Avg Loss: 0.0330 | Spec L1: 0.0750, Spec L2: 0.0098, Param: 0.0369, Perc: 0.0750
+Batch 126/146 - Avg Loss: 0.0333 | Spec L1: 0.0854, Spec L2: 0.0128, Param: 0.0205, Perc: 0.0854
+Batch 140/146 - Avg Loss: 0.0331 | Spec L1: 0.0622, Spec L2: 0.0065, Param: 0.0215, Perc: 0.0622
+
+Epoch 14/30:
+  Training Loss: 0.0330
+  Validation Loss: 0.0318
+    (Spec L1: 0.0820, Spec L2: 0.0121, Param: 0.0232, Perc: 0.0820)
+  Learning Rate: 5.00e-05
+  New best model saved!
+Batch 14/146 - Avg Loss: 0.0293 | Spec L1: 0.0956, Spec L2: 0.0157, Param: 0.0174, Perc: 0.0956
+Batch 28/146 - Avg Loss: 0.0295 | Spec L1: 0.0583, Spec L2: 0.0059, Param: 0.0201, Perc: 0.0583
+Batch 42/146 - Avg Loss: 0.0301 | Spec L1: 0.0562, Spec L2: 0.0053, Param: 0.0325, Perc: 0.0562
+Batch 56/146 - Avg Loss: 0.0309 | Spec L1: 0.0911, Spec L2: 0.0143, Param: 0.0226, Perc: 0.0911
+Batch 70/146 - Avg Loss: 0.0317 | Spec L1: 0.0780, Spec L2: 0.0094, Param: 0.0243, Perc: 0.0780
+Batch 84/146 - Avg Loss: 0.0319 | Spec L1: 0.0759, Spec L2: 0.0103, Param: 0.0322, Perc: 0.0759
+Batch 98/146 - Avg Loss: 0.0324 | Spec L1: 0.0832, Spec L2: 0.0114, Param: 0.0316, Perc: 0.0832
+Batch 112/146 - Avg Loss: 0.0324 | Spec L1: 0.0792, Spec L2: 0.0105, Param: 0.0279, Perc: 0.0792
+Batch 126/146 - Avg Loss: 0.0323 | Spec L1: 0.0595, Spec L2: 0.0065, Param: 0.0152, Perc: 0.0595
+Batch 140/146 - Avg Loss: 0.0323 | Spec L1: 0.0931, Spec L2: 0.0154, Param: 0.0187, Perc: 0.0931
+
+Epoch 15/30:
+  Training Loss: 0.0322
+  Validation Loss: 0.0331
+    (Spec L1: 0.0886, Spec L2: 0.0127, Param: 0.0217, Perc: 0.0886)     
+  Learning Rate: 5.00e-05
+  No improvement for 1 epochs
+Batch 14/146 - Avg Loss: 0.0334 | Spec L1: 0.0644, Spec L2: 0.0074, Param: 0.0184, Perc: 0.0644
+Batch 28/146 - Avg Loss: 0.0327 | Spec L1: 0.0602, Spec L2: 0.0064, Param: 0.0171, Perc: 0.0602
+Batch 42/146 - Avg Loss: 0.0327 | Spec L1: 0.0891, Spec L2: 0.0129, Param: 0.0195, Perc: 0.0891
+Batch 56/146 - Avg Loss: 0.0324 | Spec L1: 0.0701, Spec L2: 0.0082, Param: 0.0147, Perc: 0.0701
+Batch 70/146 - Avg Loss: 0.0328 | Spec L1: 0.0692, Spec L2: 0.0087, Param: 0.0164, Perc: 0.0692
+Batch 84/146 - Avg Loss: 0.0325 | Spec L1: 0.0671, Spec L2: 0.0080, Param: 0.0319, Perc: 0.0671
+Batch 98/146 - Avg Loss: 0.0321 | Spec L1: 0.0755, Spec L2: 0.0104, Param: 0.0213, Perc: 0.0755
+Batch 112/146 - Avg Loss: 0.0324 | Spec L1: 0.1046, Spec L2: 0.0185, Param: 0.0253, Perc: 0.1046
+Batch 126/146 - Avg Loss: 0.0320 | Spec L1: 0.0878, Spec L2: 0.0133, Param: 0.0255, Perc: 0.0878
+Batch 140/146 - Avg Loss: 0.0320 | Spec L1: 0.1048, Spec L2: 0.0199, Param: 0.0194, Perc: 0.1048
+
+Epoch 16/30:
+  Training Loss: 0.0318
+  Validation Loss: 0.0310
+    (Spec L1: 0.0823, Spec L2: 0.0121, Param: 0.0202, Perc: 0.0823)     
+  Learning Rate: 5.00e-05
+  New best model saved!
+Batch 14/146 - Avg Loss: 0.0335 | Spec L1: 0.1492, Spec L2: 0.0391, Param: 0.0166, Perc: 0.1492
+Batch 28/146 - Avg Loss: 0.0329 | Spec L1: 0.0941, Spec L2: 0.0145, Param: 0.0136, Perc: 0.0941
+Batch 42/146 - Avg Loss: 0.0315 | Spec L1: 0.0722, Spec L2: 0.0089, Param: 0.0163, Perc: 0.0722
+Batch 56/146 - Avg Loss: 0.0318 | Spec L1: 0.1084, Spec L2: 0.0235, Param: 0.0191, Perc: 0.1084
+Batch 70/146 - Avg Loss: 0.0314 | Spec L1: 0.0595, Spec L2: 0.0058, Param: 0.0326, Perc: 0.0595
+Batch 84/146 - Avg Loss: 0.0309 | Spec L1: 0.1010, Spec L2: 0.0199, Param: 0.0247, Perc: 0.1010
+Batch 98/146 - Avg Loss: 0.0308 | Spec L1: 0.0846, Spec L2: 0.0123, Param: 0.0167, Perc: 0.0846
+Batch 112/146 - Avg Loss: 0.0306 | Spec L1: 0.0722, Spec L2: 0.0098, Param: 0.0196, Perc: 0.0722
+Batch 126/146 - Avg Loss: 0.0307 | Spec L1: 0.0673, Spec L2: 0.0076, Param: 0.0172, Perc: 0.0673
+Batch 140/146 - Avg Loss: 0.0305 | Spec L1: 0.0625, Spec L2: 0.0067, Param: 0.0177, Perc: 0.0625
+
+Epoch 17/30:
+  Training Loss: 0.0305
+  Validation Loss: 0.0301
+  Validation Loss: 0.0301
+  Validation Loss: 0.0301
+  Validation Loss: 0.0301
+  Validation Loss: 0.0301
+    (Spec L1: 0.0799, Spec L2: 0.0114, Param: 0.0205, Perc: 0.0799)
+  Learning Rate: 5.00e-05
+  New best model saved!
+Batch 14/146 - Avg Loss: 0.0297 | Spec L1: 0.0972, Spec L2: 0.0161, Param: 0.0183, Perc: 0.0972
+Batch 28/146 - Avg Loss: 0.0292 | Spec L1: 0.0845, Spec L2: 0.0120, Param: 0.0205, Perc: 0.0845
+Batch 42/146 - Avg Loss: 0.0298 | Spec L1: 0.0639, Spec L2: 0.0077, Param: 0.0230, Perc: 0.0639
+Batch 56/146 - Avg Loss: 0.0300 | Spec L1: 0.0673, Spec L2: 0.0079, Param: 0.0374, Perc: 0.0673
+Batch 70/146 - Avg Loss: 0.0297 | Spec L1: 0.1135, Spec L2: 0.0193, Param: 0.0202, Perc: 0.1135
+Batch 84/146 - Avg Loss: 0.0298 | Spec L1: 0.0736, Spec L2: 0.0102, Param: 0.0168, Perc: 0.0736
+Batch 98/146 - Avg Loss: 0.0302 | Spec L1: 0.0850, Spec L2: 0.0121, Param: 0.0358, Perc: 0.0850
+Batch 112/146 - Avg Loss: 0.0299 | Spec L1: 0.0745, Spec L2: 0.0094, Param: 0.0183, Perc: 0.0745
+Batch 126/146 - Avg Loss: 0.0298 | Spec L1: 0.1125, Spec L2: 0.0217, Param: 0.0173, Perc: 0.1125
+Batch 140/146 - Avg Loss: 0.0300 | Spec L1: 0.0745, Spec L2: 0.0091, Param: 0.0181, Perc: 0.0745
+
+Epoch 18/30:
+  Training Loss: 0.0303
+  Validation Loss: 0.0306
+    (Spec L1: 0.0828, Spec L2: 0.0122, Param: 0.0184, Perc: 0.0828)
+  Learning Rate: 5.00e-05
+  No improvement for 1 epochs
+Batch 14/146 - Avg Loss: 0.0309 | Spec L1: 0.0742, Spec L2: 0.0094, Param: 0.0251, Perc: 0.0742
+Batch 28/146 - Avg Loss: 0.0322 | Spec L1: 0.0617, Spec L2: 0.0066, Param: 0.0220, Perc: 0.0617
+Batch 42/146 - Avg Loss: 0.0334 | Spec L1: 0.0855, Spec L2: 0.0130, Param: 0.0146, Perc: 0.0855
+Batch 56/146 - Avg Loss: 0.0326 | Spec L1: 0.0634, Spec L2: 0.0069, Param: 0.0257, Perc: 0.0634
+Batch 70/146 - Avg Loss: 0.0317 | Spec L1: 0.0727, Spec L2: 0.0092, Param: 0.0218, Perc: 0.0727
+Batch 84/146 - Avg Loss: 0.0311 | Spec L1: 0.0927, Spec L2: 0.0135, Param: 0.0266, Perc: 0.0927
+Batch 98/146 - Avg Loss: 0.0309 | Spec L1: 0.0742, Spec L2: 0.0095, Param: 0.0130, Perc: 0.0742
+Batch 112/146 - Avg Loss: 0.0306 | Spec L1: 0.0638, Spec L2: 0.0070, Param: 0.0187, Perc: 0.0638
+Batch 126/146 - Avg Loss: 0.0303 | Spec L1: 0.0639, Spec L2: 0.0073, Param: 0.0188, Perc: 0.0639
+Batch 140/146 - Avg Loss: 0.0301 | Spec L1: 0.0763, Spec L2: 0.0099, Param: 0.0241, Perc: 0.0763
+
+Epoch 19/30:
+  Training Loss: 0.0299
+  Validation Loss: 0.0293
+    (Spec L1: 0.0800, Spec L2: 0.0113, Param: 0.0179, Perc: 0.0800)
+  Learning Rate: 5.00e-05
+  New best model saved!
+Batch 14/146 - Avg Loss: 0.0285 | Spec L1: 0.0698, Spec L2: 0.0084, Param: 0.0238, Perc: 0.0698
+Batch 28/146 - Avg Loss: 0.0291 | Spec L1: 0.1075, Spec L2: 0.0205, Param: 0.0148, Perc: 0.1075
+Batch 42/146 - Avg Loss: 0.0298 | Spec L1: 0.0908, Spec L2: 0.0142, Param: 0.0229, Perc: 0.0908
+Batch 56/146 - Avg Loss: 0.0299 | Spec L1: 0.0759, Spec L2: 0.0103, Param: 0.0228, Perc: 0.0759
+Batch 70/146 - Avg Loss: 0.0302 | Spec L1: 0.0917, Spec L2: 0.0130, Param: 0.0240, Perc: 0.0917
+Batch 84/146 - Avg Loss: 0.0296 | Spec L1: 0.0653, Spec L2: 0.0077, Param: 0.0319, Perc: 0.0653
+Batch 98/146 - Avg Loss: 0.0301 | Spec L1: 0.0805, Spec L2: 0.0114, Param: 0.0133, Perc: 0.0805
+Batch 112/146 - Avg Loss: 0.0297 | Spec L1: 0.0711, Spec L2: 0.0085, Param: 0.0249, Perc: 0.0711
+Batch 126/146 - Avg Loss: 0.0296 | Spec L1: 0.0730, Spec L2: 0.0094, Param: 0.0155, Perc: 0.0730
+Batch 140/146 - Avg Loss: 0.0291 | Spec L1: 0.0780, Spec L2: 0.0104, Param: 0.0293, Perc: 0.0780
+
+Epoch 20/30:
+  Training Loss: 0.0293
+  Validation Loss: 0.0285
+    (Spec L1: 0.0774, Spec L2: 0.0110, Param: 0.0179, Perc: 0.0774)
+  Learning Rate: 5.00e-05
+  New best model saved!
+Batch 14/146 - Avg Loss: 0.0305 | Spec L1: 0.0787, Spec L2: 0.0107, Param: 0.0266, Perc: 0.0787
+Batch 28/146 - Avg Loss: 0.0299 | Spec L1: 0.0823, Spec L2: 0.0118, Param: 0.0224, Perc: 0.0823
+Batch 42/146 - Avg Loss: 0.0295 | Spec L1: 0.0650, Spec L2: 0.0076, Param: 0.0226, Perc: 0.0650
+Batch 56/146 - Avg Loss: 0.0299 | Spec L1: 0.0651, Spec L2: 0.0070, Param: 0.0228, Perc: 0.0651
+Batch 70/146 - Avg Loss: 0.0295 | Spec L1: 0.0883, Spec L2: 0.0143, Param: 0.0122, Perc: 0.0883
+Batch 84/146 - Avg Loss: 0.0296 | Spec L1: 0.0814, Spec L2: 0.0109, Param: 0.0203, Perc: 0.0814
+Batch 98/146 - Avg Loss: 0.0292 | Spec L1: 0.0624, Spec L2: 0.0066, Param: 0.0154, Perc: 0.0624
+Batch 112/146 - Avg Loss: 0.0291 | Spec L1: 0.0846, Spec L2: 0.0119, Param: 0.0265, Perc: 0.0846
+Batch 126/146 - Avg Loss: 0.0291 | Spec L1: 0.0884, Spec L2: 0.0139, Param: 0.0263, Perc: 0.0884
+Batch 140/146 - Avg Loss: 0.0294 | Spec L1: 0.0784, Spec L2: 0.0101, Param: 0.0219, Perc: 0.0784
+
+Epoch 21/30:
+  Training Loss: 0.0292
+  Validation Loss: 0.0286
+    (Spec L1: 0.0778, Spec L2: 0.0112, Param: 0.0172, Perc: 0.0778)
+  Learning Rate: 5.00e-05
+  No improvement for 1 epochs
+Batch 14/146 - Avg Loss: 0.0275 | Spec L1: 0.0762, Spec L2: 0.0097, Param: 0.0135, Perc: 0.0762
+Batch 28/146 - Avg Loss: 0.0269 | Spec L1: 0.0749, Spec L2: 0.0090, Param: 0.0187, Perc: 0.0749
+Batch 42/146 - Avg Loss: 0.0280 | Spec L1: 0.0790, Spec L2: 0.0104, Param: 0.0320, Perc: 0.0790
+Batch 56/146 - Avg Loss: 0.0281 | Spec L1: 0.1090, Spec L2: 0.0190, Param: 0.0259, Perc: 0.1090
+Batch 70/146 - Avg Loss: 0.0286 | Spec L1: 0.0941, Spec L2: 0.0148, Param: 0.0165, Perc: 0.0941
+Batch 84/146 - Avg Loss: 0.0286 | Spec L1: 0.0865, Spec L2: 0.0132, Param: 0.0274, Perc: 0.0865
+Batch 98/146 - Avg Loss: 0.0286 | Spec L1: 0.0701, Spec L2: 0.0080, Param: 0.0200, Perc: 0.0701
+Batch 112/146 - Avg Loss: 0.0289 | Spec L1: 0.0890, Spec L2: 0.0143, Param: 0.0221, Perc: 0.0890
+Batch 126/146 - Avg Loss: 0.0291 | Spec L1: 0.0800, Spec L2: 0.0114, Param: 0.0126, Perc: 0.0800
+Batch 140/146 - Avg Loss: 0.0291 | Spec L1: 0.0842, Spec L2: 0.0122, Param: 0.0226, Perc: 0.0842
+
+Epoch 22/30:
+  Training Loss: 0.0290
+  Validation Loss: 0.0286
+    (Spec L1: 0.0774, Spec L2: 0.0112, Param: 0.0174, Perc: 0.0774)
+  Learning Rate: 5.00e-05
+  No improvement for 2 epochs
+Batch 14/146 - Avg Loss: 0.0290 | Spec L1: 0.0832, Spec L2: 0.0115, Param: 0.0245, Perc: 0.0832
+Batch 28/146 - Avg Loss: 0.0290 | Spec L1: 0.0772, Spec L2: 0.0108, Param: 0.0196, Perc: 0.0772
+Batch 42/146 - Avg Loss: 0.0288 | Spec L1: 0.0802, Spec L2: 0.0117, Param: 0.0165, Perc: 0.0802
+Batch 56/146 - Avg Loss: 0.0293 | Spec L1: 0.0650, Spec L2: 0.0072, Param: 0.0174, Perc: 0.0650
+Batch 70/146 - Avg Loss: 0.0292 | Spec L1: 0.1060, Spec L2: 0.0178, Param: 0.0248, Perc: 0.1060
+Batch 84/146 - Avg Loss: 0.0290 | Spec L1: 0.0825, Spec L2: 0.0120, Param: 0.0231, Perc: 0.0825
+Batch 98/146 - Avg Loss: 0.0287 | Spec L1: 0.0713, Spec L2: 0.0088, Param: 0.0235, Perc: 0.0713
+Batch 112/146 - Avg Loss: 0.0288 | Spec L1: 0.0650, Spec L2: 0.0074, Param: 0.0139, Perc: 0.0650
+Batch 126/146 - Avg Loss: 0.0285 | Spec L1: 0.1042, Spec L2: 0.0178, Param: 0.0168, Perc: 0.1042
+Batch 140/146 - Avg Loss: 0.0285 | Spec L1: 0.0828, Spec L2: 0.0120, Param: 0.0095, Perc: 0.0828
+
+Epoch 23/30:
+  Training Loss: 0.0286
+  Validation Loss: 0.0285
+    (Spec L1: 0.0789, Spec L2: 0.0112, Param: 0.0161, Perc: 0.0789)
+  Learning Rate: 5.00e-05
+  New best model saved!
+Batch 14/146 - Avg Loss: 0.0271 | Spec L1: 0.0683, Spec L2: 0.0080, Param: 0.0174, Perc: 0.0683
+Batch 28/146 - Avg Loss: 0.0274 | Spec L1: 0.0734, Spec L2: 0.0101, Param: 0.0148, Perc: 0.0734
+Batch 42/146 - Avg Loss: 0.0273 | Spec L1: 0.1001, Spec L2: 0.0166, Param: 0.0181, Perc: 0.1001
+Batch 56/146 - Avg Loss: 0.0278 | Spec L1: 0.0640, Spec L2: 0.0084, Param: 0.0225, Perc: 0.0640
+Batch 70/146 - Avg Loss: 0.0271 | Spec L1: 0.0749, Spec L2: 0.0110, Param: 0.0183, Perc: 0.0749
+Batch 84/146 - Avg Loss: 0.0272 | Spec L1: 0.0802, Spec L2: 0.0110, Param: 0.0273, Perc: 0.0802
+Batch 98/146 - Avg Loss: 0.0279 | Spec L1: 0.0920, Spec L2: 0.0154, Param: 0.0178, Perc: 0.0920
+Batch 112/146 - Avg Loss: 0.0283 | Spec L1: 0.0977, Spec L2: 0.0173, Param: 0.0216, Perc: 0.0977
+Batch 126/146 - Avg Loss: 0.0285 | Spec L1: 0.0818, Spec L2: 0.0120, Param: 0.0254, Perc: 0.0818
+Batch 140/146 - Avg Loss: 0.0282 | Spec L1: 0.0688, Spec L2: 0.0086, Param: 0.0250, Perc: 0.0688
+
+Epoch 24/30:
+  Training Loss: 0.0282
+  Validation Loss: 0.0286
+    (Spec L1: 0.0788, Spec L2: 0.0116, Param: 0.0157, Perc: 0.0788)
+  Learning Rate: 5.00e-05
+  No improvement for 1 epochs
+Batch 14/146 - Avg Loss: 0.0294 | Spec L1: 0.1229, Spec L2: 0.0226, Param: 0.0121, Perc: 0.1229
+Batch 28/146 - Avg Loss: 0.0281 | Spec L1: 0.1073, Spec L2: 0.0204, Param: 0.0213, Perc: 0.1073
+Batch 42/146 - Avg Loss: 0.0273 | Spec L1: 0.1033, Spec L2: 0.0192, Param: 0.0170, Perc: 0.1033
+Batch 56/146 - Avg Loss: 0.0273 | Spec L1: 0.0659, Spec L2: 0.0077, Param: 0.0233, Perc: 0.0659
+Batch 70/146 - Avg Loss: 0.0272 | Spec L1: 0.0671, Spec L2: 0.0074, Param: 0.0257, Perc: 0.0671
+Batch 84/146 - Avg Loss: 0.0273 | Spec L1: 0.0632, Spec L2: 0.0070, Param: 0.0245, Perc: 0.0632
+Batch 98/146 - Avg Loss: 0.0275 | Spec L1: 0.0685, Spec L2: 0.0081, Param: 0.0117, Perc: 0.0685
+Batch 112/146 - Avg Loss: 0.0278 | Spec L1: 0.1024, Spec L2: 0.0150, Param: 0.0107, Perc: 0.1024
+Batch 126/146 - Avg Loss: 0.0276 | Spec L1: 0.0699, Spec L2: 0.0087, Param: 0.0136, Perc: 0.0699
+Batch 140/146 - Avg Loss: 0.0280 | Spec L1: 0.0846, Spec L2: 0.0144, Param: 0.0227, Perc: 0.0846
+
+Epoch 25/30:
+  Training Loss: 0.0282
+  Validation Loss: 0.0278
+    (Spec L1: 0.0791, Spec L2: 0.0106, Param: 0.0151, Perc: 0.0791)
+  Learning Rate: 5.00e-05
+  New best model saved!
+Batch 14/146 - Avg Loss: 0.0270 | Spec L1: 0.0626, Spec L2: 0.0068, Param: 0.0236, Perc: 0.0626
+Batch 28/146 - Avg Loss: 0.0273 | Spec L1: 0.0771, Spec L2: 0.0103, Param: 0.0209, Perc: 0.0771
+Batch 42/146 - Avg Loss: 0.0278 | Spec L1: 0.0919, Spec L2: 0.0135, Param: 0.0185, Perc: 0.0919
+Batch 56/146 - Avg Loss: 0.0281 | Spec L1: 0.0678, Spec L2: 0.0081, Param: 0.0215, Perc: 0.0678
+Batch 70/146 - Avg Loss: 0.0279 | Spec L1: 0.0687, Spec L2: 0.0083, Param: 0.0222, Perc: 0.0687
+Batch 84/146 - Avg Loss: 0.0280 | Spec L1: 0.0704, Spec L2: 0.0083, Param: 0.0165, Perc: 0.0704
+Batch 98/146 - Avg Loss: 0.0286 | Spec L1: 0.0614, Spec L2: 0.0065, Param: 0.0176, Perc: 0.0614
+Batch 112/146 - Avg Loss: 0.0286 | Spec L1: 0.0688, Spec L2: 0.0084, Param: 0.0188, Perc: 0.0688
+Batch 126/146 - Avg Loss: 0.0284 | Spec L1: 0.0742, Spec L2: 0.0095, Param: 0.0181, Perc: 0.0742
+Batch 140/146 - Avg Loss: 0.0282 | Spec L1: 0.0802, Spec L2: 0.0109, Param: 0.0190, Perc: 0.0802
+
+Epoch 26/30:
+  Training Loss: 0.0282
+  Validation Loss: 0.0268
+    (Spec L1: 0.0753, Spec L2: 0.0103, Param: 0.0151, Perc: 0.0753)
+  Learning Rate: 5.00e-05
+  New best model saved!
+Batch 14/146 - Avg Loss: 0.0256 | Spec L1: 0.0567, Spec L2: 0.0054, Param: 0.0214, Perc: 0.0567
+Batch 28/146 - Avg Loss: 0.0274 | Spec L1: 0.0593, Spec L2: 0.0065, Param: 0.0132, Perc: 0.0593
+Batch 42/146 - Avg Loss: 0.0276 | Spec L1: 0.0664, Spec L2: 0.0075, Param: 0.0108, Perc: 0.0664
+Batch 56/146 - Avg Loss: 0.0279 | Spec L1: 0.0907, Spec L2: 0.0138, Param: 0.0161, Perc: 0.0907
+Batch 70/146 - Avg Loss: 0.0279 | Spec L1: 0.0713, Spec L2: 0.0090, Param: 0.0098, Perc: 0.0713
+Batch 84/146 - Avg Loss: 0.0276 | Spec L1: 0.0672, Spec L2: 0.0078, Param: 0.0116, Perc: 0.0672
+Batch 98/146 - Avg Loss: 0.0275 | Spec L1: 0.0613, Spec L2: 0.0063, Param: 0.0157, Perc: 0.0613
+Batch 112/146 - Avg Loss: 0.0275 | Spec L1: 0.0720, Spec L2: 0.0095, Param: 0.0182, Perc: 0.0720
+Batch 126/146 - Avg Loss: 0.0274 | Spec L1: 0.0668, Spec L2: 0.0079, Param: 0.0242, Perc: 0.0668
+Batch 140/146 - Avg Loss: 0.0274 | Spec L1: 0.1359, Spec L2: 0.0272, Param: 0.0080, Perc: 0.1359
+
+Epoch 27/30:
+  Training Loss: 0.0275
+  Validation Loss: 0.0269
+    (Spec L1: 0.0757, Spec L2: 0.0103, Param: 0.0151, Perc: 0.0757)
+  Learning Rate: 5.00e-05
+  No improvement for 1 epochs
+Batch 14/146 - Avg Loss: 0.0248 | Spec L1: 0.0835, Spec L2: 0.0116, Param: 0.0132, Perc: 0.0835
+Batch 28/146 - Avg Loss: 0.0271 | Spec L1: 0.0689, Spec L2: 0.0081, Param: 0.0171, Perc: 0.0689
+Batch 42/146 - Avg Loss: 0.0284 | Spec L1: 0.0605, Spec L2: 0.0059, Param: 0.0227, Perc: 0.0605
+Batch 56/146 - Avg Loss: 0.0283 | Spec L1: 0.0844, Spec L2: 0.0116, Param: 0.0089, Perc: 0.0844
+Batch 70/146 - Avg Loss: 0.0282 | Spec L1: 0.0737, Spec L2: 0.0089, Param: 0.0135, Perc: 0.0737
+Batch 84/146 - Avg Loss: 0.0284 | Spec L1: 0.0951, Spec L2: 0.0148, Param: 0.0118, Perc: 0.0951
+Batch 98/146 - Avg Loss: 0.0283 | Spec L1: 0.0805, Spec L2: 0.0109, Param: 0.0102, Perc: 0.0805
+Batch 112/146 - Avg Loss: 0.0280 | Spec L1: 0.0809, Spec L2: 0.0114, Param: 0.0092, Perc: 0.0809
+Batch 126/146 - Avg Loss: 0.0277 | Spec L1: 0.0681, Spec L2: 0.0085, Param: 0.0175, Perc: 0.0681
+Batch 140/146 - Avg Loss: 0.0276 | Spec L1: 0.0693, Spec L2: 0.0080, Param: 0.0162, Perc: 0.0693
+
+Epoch 28/30:
+Batch 140/146 - Avg Loss: 0.0276 | Spec L1: 0.0693, Spec L2: 0.0080, Param: 0.0162, Perc: 0.0693
+
+Epoch 28/30:
+
+Epoch 28/30:
+Epoch 28/30:
+  Training Loss: 0.0276
+  Training Loss: 0.0276
+  Validation Loss: 0.0276
+  Validation Loss: 0.0276
+    (Spec L1: 0.0778, Spec L2: 0.0110, Param: 0.0146, Perc: 0.0778)
+    (Spec L1: 0.0778, Spec L2: 0.0110, Param: 0.0146, Perc: 0.0778)
+  Learning Rate: 5.00e-05
+  Learning Rate: 5.00e-05
+  No improvement for 2 epochs
+Batch 14/146 - Avg Loss: 0.0249 | Spec L1: 0.0517, Spec L2: 0.0048, Param: 0.0170, Perc: 0.0517
+Batch 28/146 - Avg Loss: 0.0251 | Spec L1: 0.0883, Spec L2: 0.0131, Param: 0.0190, Perc: 0.0883
+Batch 42/146 - Avg Loss: 0.0260 | Spec L1: 0.0982, Spec L2: 0.0176, Param: 0.0112, Perc: 0.0982
+Batch 56/146 - Avg Loss: 0.0262 | Spec L1: 0.0756, Spec L2: 0.0096, Param: 0.0198, Perc: 0.0756
+Batch 70/146 - Avg Loss: 0.0271 | Spec L1: 0.0726, Spec L2: 0.0095, Param: 0.0185, Perc: 0.0726
+Batch 84/146 - Avg Loss: 0.0272 | Spec L1: 0.0633, Spec L2: 0.0073, Param: 0.0182, Perc: 0.0633
+Batch 98/146 - Avg Loss: 0.0270 | Spec L1: 0.0712, Spec L2: 0.0086, Param: 0.0113, Perc: 0.0712
+Batch 112/146 - Avg Loss: 0.0272 | Spec L1: 0.0819, Spec L2: 0.0119, Param: 0.0155, Perc: 0.0819
+Batch 126/146 - Avg Loss: 0.0272 | Spec L1: 0.1044, Spec L2: 0.0194, Param: 0.0213, Perc: 0.1044
+Batch 140/146 - Avg Loss: 0.0273 | Spec L1: 0.0907, Spec L2: 0.0147, Param: 0.0137, Perc: 0.0907
+
+Epoch 29/30:
+  Training Loss: 0.0274
+m: 0.0267, Perc: 0.0596
+Batch 42/146 - Avg Loss: 0.0272 | Spec L1: 0.0791, Spec L2: 0.0111, Param: 0.0187, Perc: 0.0791
+Batch 56/146 - Avg Loss: 0.0271 | Spec L1: 0.0828, Spec L2: 0.0114, Param: 0.0087, Perc: 0.0828
+Batch 70/146 - Avg Loss: 0.0268 | Spec L1: 0.0740, Spec L2: 0.0097, Param: 0.0204, Perc: 0.0740
+Batch 84/146 - Avg Loss: 0.0269 | Spec L1: 0.0867, Spec L2: 0.0122, Param: 0.0200, Perc: 0.0867
+Batch 98/146 - Avg Loss: 0.0273 | Spec L1: 0.0676, Spec L2: 0.0076, Param: 0.0089, Perc: 0.0676
+Batch 112/146 - Avg Loss: 0.0274 | Spec L1: 0.0759, Spec L2: 0.0103, Param: 0.0107, Perc: 0.0759
+Batch 126/146 - Avg Loss: 0.0273 | Spec L1: 0.0619, Spec L2: 0.0070, Param: 0.0152, Perc: 0.0619
+Batch 140/146 - Avg Loss: 0.0275 | Spec L1: 0.0777, Spec L2: 0.0093, Param: 0.0250, Perc: 0.0777
+
+Epoch 30/30:
+  Training Loss: 0.0275
+  Validation Loss: 0.0275
+    (Spec L1: 0.0777, Spec L2: 0.0108, Param: 0.0147, Perc: 0.0777)
+  Learning Rate: 2.50e-05
+  No improvement for 4 epochs
+
+Training complete!
+Best validation loss: 0.0268
