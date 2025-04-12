@@ -177,19 +177,27 @@ def main():
     
     print("Current working directory:", os.getcwd())
     
-    # Define output directories (ensure folder structure matches your project)
-    base_output_dir = os.path.join("..", "experiments", "output_full")
+    # Get the absolute path of the script's directory
+    script_dir = os.path.dirname(os.path.abspath(__file__))
+    project_root = os.path.dirname(script_dir)
+    
+    # Define output directories using absolute paths
+    base_output_dir = os.path.join(project_root, "experiments", "output_full")
     output_audio_dir = os.path.join(base_output_dir, "output_audio")
     output_spectrogram_dir = os.path.join(base_output_dir, "output_spectrograms")
     output_txt_dir = os.path.join(base_output_dir, "output_txt")
     
-    for folder in [output_audio_dir, output_spectrogram_dir, output_txt_dir]:
-        if os.path.exists(folder):
-            shutil.rmtree(folder)
+    # Create output directories if they don't exist
+    for folder in [base_output_dir, output_audio_dir, output_spectrogram_dir, output_txt_dir]:
         os.makedirs(folder, exist_ok=True)
     
-    # Define input directories
-    base_input_folder = os.path.join("..", "data", "raw", "fma_small")
+    # Define input directories using absolute paths
+    base_input_folder = os.path.join(project_root, "data", "raw", "fma_small")
+    
+    # Check if input directory exists
+    if not os.path.exists(base_input_folder):
+        raise FileNotFoundError(f"Input directory not found: {base_input_folder}")
+    
     subfolders = [name for name in os.listdir(base_input_folder)
             if os.path.isdir(os.path.join(base_input_folder, name))]
     

@@ -1,61 +1,61 @@
 Predicted Effect Parameters (mean, std, min, max):
 Gain:
- Mean: -0.0048
- Std: 0.0044
- Min: -0.0244
- Max: 0.0335
+ Mean: -0.0080
+ Std: 0.0017
+ Min: -0.0166
+ Max: 0.0075
 
 EQ Center:
- Mean: -0.0002
- Std: 0.0003
- Min: -0.0023
- Max: 0.0012
+ Mean: 0.0016
+ Std: 0.0001
+ Min: 0.0007
+ Max: 0.0019
 
 EQ Q:
- Mean: -0.0002
- Std: 0.0001
- Min: -0.0008
- Max: 0.0015
+ Mean: -0.0013
+ Std: 0.0003
+ Min: -0.0056
+ Max: 0.0004
 
 EQ Gain:
- Mean: -0.0024
- Std: 0.0008
- Min: -0.0090
- Max: 0.0012
+ Mean: -0.0053
+ Std: 0.0007
+ Min: -0.0139
+ Max: -0.0013
 
 Comp Threshold:
- Mean: -0.0007
- Std: 0.0003
- Min: -0.0047
- Max: 0.0010
+ Mean: 0.0005
+ Std: 0.0001
+ Min: -0.0005
+ Max: 0.0026
 
 Comp Ratio:
- Mean: -0.0013
- Std: 0.0008
- Min: -0.0090
- Max: 0.0023
+ Mean: -0.0001
+ Std: 0.0001
+ Min: -0.0010
+ Max: 0.0005
 
 Comp Makeup:
- Mean: -0.0050
- Std: 0.0014
- Min: -0.0234
- Max: 0.0010
+ Mean: -0.0097
+ Std: 0.0016
+ Min: -0.0302
+ Max: -0.0024
 
 Reverb Decay:
- Mean: 0.0017
- Std: 0.0014
- Min: -0.0051
- Max: 0.0145
+ Mean: 0.0002
+ Std: 0.0000
+ Min: 0.0001
+ Max: 0.0004
 
 Echo Delay:
- Mean: -0.0003
- Std: 0.0004
- Min: -0.0055
- Max: 0.0016
+ Mean: 0.0031
+ Std: 0.0008
+ Min: -0.0007
+ Max: 0.0137
 
 Echo Attenuation:
- Mean: 0.0003
+ Mean: 0.0012
  Std: 0.0003
- Min: -0.0011
- Max: 0.0026
+ Min: -0.0004
+ Max: 0.0046
 
