@@ -9,6 +9,12 @@ Key concepts:
 - RMS (Root Mean Square): A measure of audio energy over time
 - Normalization: Scaling our data to make it easier for the model to learn
 - Parameter parsing: Reading and normalizing audio processing parameters
+
+we handle:
+1. loading pairs of audio files (before/after mastering)
+2. turning audio into pictures (spectrograms) or volume measurements (RMS)
+3. making all our numbers behave (normalization)
+4. reading the mastering "recipes" (parameter files)
 """
 
 import os
@@ -18,24 +24,31 @@ import numpy as np
 import torch
 from torch.utils.data import Dataset
 
-# Append project root for module imports
+# gotta add the project root so we can import stuff from other folders
 import sys
 sys.path.append(os.path.join(os.path.dirname(__file__), ".."))
 
 def compute_mel_spectrogram(audio, sr, n_mels=128, n_fft=2048, hop_length=512):
     """
-    Convert raw audio into a mel spectrogram.
-    Why mel? Because our ears don't hear frequencies linearly - we're more sensitive to 
-    changes in lower frequencies. Mel scale mimics this human perception.
+    turns raw audio into a mel spectrogram - think of it like taking a photo of sound!
     
-    n_mels: Number of mel bands (like frequency bins, but warped to match human hearing)
-    n_fft: Size of the FFT window (bigger = better frequency resolution, but worse time resolution)
-    hop_length: How much we slide the window each time (smaller = more time resolution)
+    why mel scale? our ears are weird - we hear low notes better than high notes
+    mel scale warps the frequencies to match how we actually hear stuff
+    
+    Args:
+        audio: Raw audio signal
+        sr: Sample rate
+        n_mels: Number of mel bands (like frequency bins, but warped to match human hearing)
+        n_fft: Size of the FFT window (bigger = better frequency resolution, but worse time resolution)
+        hop_length: How much we slide the window each time (smaller = more time resolution)
+    
+    Returns:
+        a mel spectrogram in dB (decibels) - basically a picture of the sound
     """
-    # First compute the regular spectrogram, then convert to mel scale
+    # first we make a regular spectrogram, then warp it to match human hearing
     mel_spec = librosa.feature.melspectrogram(y=audio, sr=sr, n_fft=n_fft, 
                                                 hop_length=hop_length, n_mels=n_mels)
-    # Convert to dB scale because our ears perceive sound logarithmically
+    # convert to dB because our ears hear sound logarithmically (like how we measure earthquakes)
     mel_spec_db = librosa.power_to_db(mel_spec, ref=np.max)
     return mel_spec_db
 
@@ -44,32 +57,43 @@ def compute_rms(audio, frame_length=2048, hop_length=512):
     Compute the Root Mean Square (RMS) energy of the audio signal.
     This is like measuring how "loud" the audio is over time.
     
-    frame_length: How many samples to look at at once
-    hop_length: How much to slide the window each time
+    Args:
+        audio: the raw sound wave
+        frame_length: how many samples to look at at once (like taking a snapshot)
+        hop_length: how much to slide the window each time (like frames in a video)
+    
+    Returns:
+        RMS values in dB - basically a list of how loud the sound is at each moment
     """
-    # Compute RMS using librosa's built-in function
+    # compute RMS using librosa's built-in function (saves us from doing the math)
     rms = librosa.feature.rms(y=audio, frame_length=frame_length, hop_length=hop_length)[0]
-    # Convert to dB scale (logarithmic, like human hearing)
-    rms_db = 10 * np.log10(rms + 1e-10)  # Add small number to avoid log(0)
+    # convert to dB (logarithmic scale) because that's how we hear loudness
+    # adding 1e-10 to avoid log(0) which would make the computer cry
+    rms_db = 10 * np.log10(rms + 1e-10)
     return rms_db
 
 def compute_segmented_rms(audio, sr, segment_duration=0.1):
     """
-    Compute RMS energy in fixed-duration segments.
-    This is like measuring the average loudness every 100ms.
+    measures the average loudness every 100ms - like checking the volume every few seconds
     
-    segment_duration: How long each segment should be in seconds
+    Args:
+        audio: the raw sound wave
+        sr: samples per second
+        segment_duration: how long each chunk should be in seconds
+    
+    Returns:
+        array of RMS values for each time chunk
     """
-    # Convert duration to samples
+    # convert seconds to samples (like converting minutes to seconds)
     segment_length = int(segment_duration * sr)
     rms_vals = []
     
-    # Process audio in chunks
+    # chop the audio into pieces and measure each one
     for i in range(0, len(audio), segment_length):
         segment = audio[i:i+segment_length]
         if len(segment) == 0:
             continue
-        # Compute RMS for this segment
+        # RMS formula: sqrt(mean(samples²)) - basically average of squared values, then square root
         rms = np.sqrt(np.mean(segment**2))
         # Convert to dB
         rms_db = 10 * np.log10(rms + 1e-10)
@@ -79,20 +103,27 @@ def compute_segmented_rms(audio, sr, segment_duration=0.1):
 
 class PairedAudioDataset(Dataset):
     """
-    This is where the magic happens! This class handles loading pairs of audio files:
-    - Original (clean) audio
-    - Modified (processed) audio
+    this is where the magic happens! we load pairs of audio files:
+    - original (clean) audio
+    - modified (processed) audio
     
     It's like having before/after photos, but for sound.
+    
+    we provide:
+    1. spectrogram/RMS representations (like photos of the sound)
+    2. normalized processing parameters (the "recipe" for how to process the audio)
+    3. proper batching for training (like preparing multiple meals at once)
     """
     def __init__(self, audio_dir, sr=None, transform=None, mode="spectrogram", segment_duration=None):
         """
         Initialize our dataset.
-        audio_dir: Where to find our audio files
-        sr: Sample rate (how many samples per second). None = use original file's rate
-        transform: Any extra processing we want to do
-        mode: How to represent the audio ("spectrogram" or "rms")
-        segment_duration: For segmented RMS mode, how long each segment should be
+        
+        Args:
+            audio_dir: Where to find our audio files
+            sr: Sample rate (how many samples per second). None = use original file's rate
+            transform: Any extra processing we want to do
+            mode: How to represent the audio ("spectrogram" or "rms")
+            segment_duration: For segmented RMS mode, how long each segment should be
         """
         self.audio_dir = audio_dir
         # Find all original audio files (they should end with _original.wav)
@@ -107,13 +138,22 @@ class PairedAudioDataset(Dataset):
         self.param_dir = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "experiments", "output_full", "output_txt")
         
     def __len__(self):
-        """How many audio files do we have?"""
+        """Returns the number of audio pairs in the dataset."""
         return len(self.original_files)
     
     def __getitem__(self, idx):
         """
         Get one pair of audio files and their parameters.
         This is what PyTorch calls when it needs a training example.
+        
+        Args:
+            idx: Index of the audio pair to retrieve
+        
+        Returns:
+            Tuple of (modified_spec, original_spec, param_vector)
+            - modified_spec: Spectrogram/RMS of processed audio
+            - original_spec: Spectrogram/RMS of original audio
+            - param_vector: Normalized processing parameters
         """
         # Get paths to original and modified audio files
         orig_path = self.original_files[idx]
@@ -167,19 +207,33 @@ class PairedAudioDataset(Dataset):
     
     def _process_spectrogram(self, audio, sr):
         """
-        Process audio into a mel spectrogram and normalize it.
-        This is like converting a photo to black and white and adjusting the contrast.
+        turns audio into a mel spectrogram and normalizes it
+        like converting a photo to black and white and adjusting the contrast
+        
+        Steps:
+        1. compute mel spectrogram (like taking a photo)
+        2. convert to dB scale (like adjusting brightness)
+        3. convert to tensor (like saving the photo)
+        4. add channel dimension (like adding color channels)
+        5. normalize to [0,1] range (like adjusting contrast)
+        
+        Args:
+            audio: raw audio signal
+            sr: sample rate
+        
+        Returns:
+            Normalized mel spectrogram tensor
         """
         # Compute mel spectrogram
         mel_spec = librosa.feature.melspectrogram(y=audio, sr=sr, n_fft=2048, hop_length=512, n_mels=128)
-        # Convert to dB scale
+        # convert to dB scale (logarithmic, like how we hear)
         mel_spec = librosa.power_to_db(mel_spec + 1e-6, ref=np.max)
         # Convert to PyTorch tensor
         mel_spec = torch.tensor(mel_spec, dtype=torch.float32)
         # Add channel dimension if needed
         if len(mel_spec.shape) == 2:
             mel_spec = mel_spec.unsqueeze(0)
-        # Normalize to [0,1] range
+        # normalize to [0,1] range (makes training easier)
         mel_spec = (mel_spec - mel_spec.min()) / (mel_spec.max() - mel_spec.min() + 1e-6)
         return mel_spec
     
@@ -187,6 +241,19 @@ class PairedAudioDataset(Dataset):
         """
         Read and normalize audio processing parameters from a text file.
         This is like reading a recipe and converting all measurements to the same units.
+        
+        The parameters include:
+        - Gain: overall volume adjustment (like turning up/down the volume)
+        - EQ: equalization settings (like bass/treble controls)
+        - Compression: dynamic range control (like auto-volume)
+        - Reverb: room simulation (like adding echo)
+        - Echo: delay effects (like repeating the sound)
+        
+        Args:
+            filepath: Path to the parameter file
+        
+        Returns:
+            Normalized parameter vector (10 values in [0,1] range)
         """
         # Read the parameter file
         with open(filepath, "r") as f:
@@ -204,34 +271,34 @@ class PairedAudioDataset(Dataset):
                     val = float(key_val[1].split()[0].strip())
                     params[f"eq_{key}"] = val
             elif line.startswith("Gain:"):
-                # Parse gain parameter
+                # parse gain parameter (like volume knob)
                 p = line.split(":")[1].strip()
                 key_val = p.split("=")
                 params["gain_db"] = float(key_val[1].strip())
             elif line.startswith("Echo:"):
-                # Parse echo parameters
+                # parse echo parameters (like delay settings)
                 parts = line.split(":")[1].strip().split(",")
                 for p in parts:
                     key_val = p.strip().split("=")
                     params[key_val[0].strip()] = float(key_val[1].strip())
             elif line.startswith("Reverb:"):
-                # Parse reverb parameters
+                # parse reverb parameters (like room size)
                 parts = line.split(":")[1].strip().split(",")
                 for p in parts:
                     key_val = p.strip().split("=")
                     if key_val[0].strip() == "decay":
                         params["decay"] = float(key_val[1].strip())
             elif line.startswith("Compression:"):
-                # Parse compression parameters
+                # parse compression parameters (like auto-volume settings)
                 parts = line.split(":")[1].strip().split(",")
                 for p in parts:
                     key_val = p.strip().split("=")
                     params[key_val[0].strip()] = float(key_val[1].strip())
         
-        # Get sample rate (default to 44.1kHz if not specified)
+        # get sample rate (default to 44.1kHz if not specified)
         sr = self.sr if self.sr else 44100
         
-        # Extract all parameters with defaults
+        # extract all parameters with defaults
         gain = params.get("gain_db", 0.0)
         eq_center = params.get("eq_fc", 0.0)
         eq_Q = params.get("eq_Q", 0.0)
@@ -243,8 +310,8 @@ class PairedAudioDataset(Dataset):
         echo_delay = params.get("delay_seconds", 0.0)
         echo_atten = params.get("attenuation", 0.0)
         
-        # Normalize all parameters to [0,1] range
-        # This makes it easier for the neural network to learn
+        # normalize all parameters to [0,1] range (makes training easier)
+        # this is like converting all measurements to the same units
         norm_gain = (gain + 1) / 2.0  # [-1,1] -> [0,1]
         norm_eq_center = eq_center / (sr/2)  # [0,sr/2] -> [0,1]
         norm_eq_Q = (eq_Q - 0.1)/9.9  # [0.1,10] -> [0,1]
@@ -264,7 +331,13 @@ class PairedAudioDataset(Dataset):
         return torch.tensor(vector, dtype=torch.float32)
     
     def _empty_tensor(self):
-        """Return an empty tensor when we can't load the audio."""
+        """
+        Creates an empty tensor for error cases.
+        Used when audio loading fails or contains invalid values.
+        
+        Returns:
+            zero tensor with appropriate shape
+        """
         return torch.zeros(1, dtype=torch.float32)
 
 if __name__ == "__main__":
@@ -272,7 +345,7 @@ if __name__ == "__main__":
     CURRENT_DIR = os.path.dirname(os.path.abspath(__file__))
     AUDIO_DIR = os.path.join(CURRENT_DIR, "..", "experiments", "output_full", "output_audio")
     
-    # Try loading some data in spectrogram mode
+    # try loading some data in spectrogram mode
     dataset_spec = PairedAudioDataset(
         audio_dir=AUDIO_DIR, 
         sr=44100, 
@@ -286,7 +359,7 @@ if __name__ == "__main__":
         print("Target spectrogram shape:", sample_target.shape)
         print("Normalized parameter vector:", sample_params)
     
-    # Try loading some data in segmented RMS mode
+    # try loading some data in segmented RMS mode
     dataset_rms_seg = PairedAudioDataset(
         audio_dir="experiments/output_full/output_audio", 
         sr=44100, 

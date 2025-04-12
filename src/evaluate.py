@@ -1,4 +1,14 @@
 # evaluate.py
+"""
+This script handles the evaluation of our trained audio mastering model.
+It provides comprehensive tools for:
+- Loading and processing audio files
+- Running model inference
+- Visualizing results
+- Analyzing parameter predictions
+- Converting spectrograms back to audio
+"""
+
 import os
 import sys
 import shutil
@@ -18,9 +28,19 @@ print("Project root added to path:", project_root)
 sys.path.append(project_root)
 
 ###############################
-# Utility Functions (same as before)
+# Utility Functions
 ###############################
 def get_most_recent_checkpoint(checkpoints_dir):
+    """
+    Finds the most recent or best model checkpoint to use for evaluation.
+    Prioritizes 'best_model.pt' if available, otherwise uses the most recent epoch checkpoint.
+    
+    Args:
+        checkpoints_dir: Directory containing model checkpoints
+    
+    Returns:
+        Path to the selected checkpoint file
+    """
     best_checkpoint = os.path.join(checkpoints_dir, "best_model.pt")
     if os.path.exists(best_checkpoint):
         print(f"Using best_model.pt: {best_checkpoint}")
@@ -35,6 +55,18 @@ def get_most_recent_checkpoint(checkpoints_dir):
     return most_recent
 
 def copy_modified_audio(source_dir, target_dir, num_files=5):
+    """
+    Copies a specified number of modified audio files for evaluation.
+    Useful for batch processing multiple test files.
+    
+    Args:
+        source_dir: Directory containing original audio files
+        target_dir: Directory to copy files to
+        num_files: Maximum number of files to copy
+    
+    Returns:
+        List of paths to copied files
+    """
     if not os.path.exists(target_dir):
         os.makedirs(target_dir)
     files = [f for f in os.listdir(source_dir) if "modified" in f.lower() and f.endswith(".wav")]
@@ -53,10 +85,24 @@ def copy_modified_audio(source_dir, target_dir, num_files=5):
     return copied_paths
 
 def process_audio_file(audio_path, sr=44100, n_fft=2048, hop_length=512, n_mels=128):
+    """
+    Processes an audio file into a normalized mel spectrogram tensor.
+    Handles loading, preprocessing, and normalization of audio data.
+    
+    Args:
+        audio_path: Path to the audio file
+        sr: Sample rate
+        n_fft: FFT window size
+        hop_length: Hop length for STFT
+        n_mels: Number of mel bands
+    
+    Returns:
+        Tuple of (normalized_mel_tensor, original_mel_db, min_val, max_val, raw_audio)
+    """
     raw_audio, _ = librosa.load(audio_path, sr=sr, mono=True)
     raw_audio = np.clip(raw_audio, -1.0, 1.0)
     mel_spec = librosa.feature.melspectrogram(y=raw_audio, sr=sr, n_fft=n_fft,
-                                               hop_length=hop_length, n_mels=n_mels)
+                                            hop_length=hop_length, n_mels=n_mels)
     mel_spec_db = librosa.power_to_db(mel_spec + 1e-6, ref=np.max)
     min_val = mel_spec_db.min()
     max_val = mel_spec_db.max()
@@ -65,9 +111,34 @@ def process_audio_file(audio_path, sr=44100, n_fft=2048, hop_length=512, n_mels=
     return normalized_tensor, mel_spec_db, min_val, max_val, raw_audio
 
 def denormalize_spectrogram(normalized_spec, min_val, max_val):
+    """
+    Converts a normalized spectrogram back to its original dB scale.
+    
+    Args:
+        normalized_spec: Normalized spectrogram (0-1 range)
+        min_val: Original minimum value
+        max_val: Original maximum value
+    
+    Returns:
+        Denormalized spectrogram in dB
+    """
     return normalized_spec * (max_val - min_val) + min_val
 
 def mel_to_audio(mel_spec_db, sr=44100, n_fft=2048, hop_length=512, n_iter=64):
+    """
+    Converts a mel spectrogram back to audio using the Griffin-Lim algorithm.
+    This is an approximate inverse transform that estimates the phase information.
+    
+    Args:
+        mel_spec_db: Mel spectrogram in dB
+        sr: Sample rate
+        n_fft: FFT window size
+        hop_length: Hop length for STFT
+        n_iter: Number of iterations for Griffin-Lim
+    
+    Returns:
+        Reconstructed audio signal
+    """
     mel_spec_power = librosa.db_to_power(mel_spec_db)
     mel_spec_power = np.maximum(mel_spec_power, 1e-10)
     stft_magnitude = librosa.feature.inverse.mel_to_stft(mel_spec_power, sr=sr, n_fft=n_fft, power=2.0)
@@ -78,6 +149,17 @@ def mel_to_audio(mel_spec_db, sr=44100, n_fft=2048, hop_length=512, n_iter=64):
     return audio
 
 def save_spectrogram(spectrogram, filename, title="Spectrogram", sr=44100, hop_length=512):
+    """
+    Saves a spectrogram visualization as a PNG file.
+    Includes proper scaling and colorbar for dB values.
+    
+    Args:
+        spectrogram: Spectrogram data to visualize
+        filename: Output file path
+        title: Plot title
+        sr: Sample rate
+        hop_length: Hop length for time axis
+    """
     plt.figure(figsize=(10,6))
     librosa.display.specshow(spectrogram, sr=sr, hop_length=hop_length, x_axis='time', y_axis='mel')
     plt.colorbar(format='%+2.0f dB')
@@ -88,6 +170,17 @@ def save_spectrogram(spectrogram, filename, title="Spectrogram", sr=44100, hop_l
     print(f"Saved spectrogram image: {filename}")
 
 def save_comparison_plot(input_mel, output_mel, filename, sr=44100, hop_length=512):
+    """
+    Creates a side-by-side comparison of input and output spectrograms.
+    Useful for visually assessing the model's transformations.
+    
+    Args:
+        input_mel: Input mel spectrogram
+        output_mel: Output mel spectrogram
+        filename: Output file path
+        sr: Sample rate
+        hop_length: Hop length for time axis
+    """
     plt.figure(figsize=(16,6))
     plt.subplot(1,2,1)
     img1 = librosa.display.specshow(input_mel, sr=sr, hop_length=hop_length, x_axis='time', y_axis='mel')
@@ -103,9 +196,18 @@ def save_comparison_plot(input_mel, output_mel, filename, sr=44100, hop_length=5
     print(f"Saved comparison plot: {filename}")
 
 def save_parameters_info(predicted_params_norm, unnorm_params, filename):
+    """
+    Saves detailed statistics about predicted parameters to a text file.
+    Includes both normalized and unnormalized parameter values.
+    
+    Args:
+        predicted_params_norm: Normalized parameter predictions
+        unnorm_params: Unnormalized parameter values
+        filename: Output file path
+    """
     param_names = ["Gain", "EQ Center", "EQ Q", "EQ Gain",
-                   "Comp Threshold", "Comp Ratio", "Comp Makeup",
-                   "Reverb Decay", "Echo Delay", "Echo Attenuation"]
+                "Comp Threshold", "Comp Ratio", "Comp Makeup",
+                "Reverb Decay", "Echo Delay", "Echo Attenuation"]
     with open(filename, "w") as f:
         f.write("Predicted Normalized Parameters:\n")
         for i, name in enumerate(param_names):
@@ -118,6 +220,17 @@ def save_parameters_info(predicted_params_norm, unnorm_params, filename):
     print(f"Saved parameter info: {filename}")
 
 def unnormalize_parameters(predicted_params_norm, sr=44100):
+    """
+    Converts normalized parameters (0-1 range) back to their original scales.
+    Each parameter has its own specific scaling range based on typical audio processing values.
+    
+    Args:
+        predicted_params_norm: Normalized parameters
+        sr: Sample rate (used for frequency-related parameters)
+    
+    Returns:
+        Unnormalized parameters with proper scaling
+    """
     gain = predicted_params_norm[..., 0] * 2 - 1
     eq_center = predicted_params_norm[..., 1] * (sr / 2)
     eq_Q = predicted_params_norm[..., 2] * 9.9 + 0.1
@@ -129,21 +242,42 @@ def unnormalize_parameters(predicted_params_norm, sr=44100):
     echo_delay = predicted_params_norm[..., 8] * 100
     echo_atten = predicted_params_norm[..., 9]
     unnorm_params = torch.stack([gain, eq_center, eq_Q, eq_gain,
-                                 comp_thresh, comp_ratio, comp_makeup,
-                                 reverb_decay, echo_delay, echo_atten], dim=-1)
+                                comp_thresh, comp_ratio, comp_makeup,
+                                reverb_decay, echo_delay, echo_atten], dim=-1)
     return unnorm_params
 
 ###############################
 # Evaluation Function
 ###############################
 def evaluate_model(checkpoint_path, audio_path, output_dir, sr=44100, n_fft=2048,
-                   hop_length=512, n_mels=128, n_iter=64):
+                hop_length=512, n_mels=128, n_iter=64):
+    """
+    Main evaluation function that processes an audio file through the trained model.
+    
+    Steps:
+    1. Loads the model and checkpoint
+    2. Processes the input audio
+    3. Runs model inference
+    4. Generates visualizations
+    5. Saves results and parameters
+    6. Optionally performs bypass reversal
+    
+    Args:
+        checkpoint_path: Path to model checkpoint
+        audio_path: Path to input audio file
+        output_dir: Directory to save results
+        sr: Sample rate
+        n_fft: FFT window size
+        hop_length: Hop length for STFT
+        n_mels: Number of mel bands
+        n_iter: Number of iterations for audio reconstruction
+    """
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     print(f"Using device: {device}")
     
     # Initialize the new model architecture
     model = OneStageDeepUNet(sr=sr, hop_length=hop_length, in_channels=1, out_channels=1,
-                             base_features=64, blocks_per_level=5, lstm_hidden=32, num_layers=1, num_params=10)
+                            base_features=64, blocks_per_level=5, lstm_hidden=32, num_layers=1, num_params=10)
     model = model.to(device)
     
     print(f"Loading checkpoint from: {checkpoint_path}")

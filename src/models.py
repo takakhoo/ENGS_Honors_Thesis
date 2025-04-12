@@ -1,4 +1,13 @@
 # models.py
+"""
+This module contains the neural network architectures for our audio mastering system.
+It includes:
+- Basic building blocks (ResidualBlock, AttentionBlock)
+- Deep UNet architecture for spectrogram processing
+- LSTM module for parameter prediction
+- Combined model that integrates both components
+"""
+
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
@@ -7,7 +16,15 @@ import torch.nn.functional as F
 # Basic Building Blocks
 ##############################
 class ResidualBlock(nn.Module):
-    """A standard residual block with two convolutional layers and a skip connection."""
+    """
+    A residual block with skip connections to help with gradient flow and feature reuse.
+    Each block contains:
+    - Two convolutional layers with batch normalization
+    - ReLU activation
+    - Optional shortcut connection for dimension matching
+    
+    The skip connection helps preserve important features and makes training deeper networks easier.
+    """
     def __init__(self, in_channels, out_channels, stride=1):
         super(ResidualBlock, self).__init__()
         self.conv1 = nn.Conv2d(in_channels, out_channels,
@@ -33,7 +50,15 @@ class ResidualBlock(nn.Module):
         return out
 
 class AttentionBlock(nn.Module):
-    """An attention module for gating encoder features before concatenation in the decoder."""
+    """
+    Attention mechanism for the UNet decoder that helps focus on relevant features.
+    Implements a gating mechanism that:
+    1. Processes both the upsampled feature map and skip connection
+    2. Computes attention weights using a sigmoid activation
+    3. Applies the weights to the skip connection features
+    
+    This helps the model focus on important spectral features during reconstruction.
+    """
     def __init__(self, F_g, F_l, F_int):
         super(AttentionBlock, self).__init__()
         self.W_g = nn.Sequential(
@@ -59,7 +84,18 @@ class AttentionBlock(nn.Module):
         return x * psi
 
 def make_residual_stack(num_blocks, in_channels, out_channels, stride=1):
-    """Return a sequential container of num_blocks ResidualBlock layers."""
+    """
+    Creates a stack of residual blocks for deeper feature extraction.
+    
+    Args:
+        num_blocks: Number of residual blocks in the stack
+        in_channels: Input channel dimension
+        out_channels: Output channel dimension
+        stride: Stride for the first block (others use stride=1)
+    
+    Returns:
+        Sequential container of residual blocks
+    """
     layers = []
     # First block takes care of potential dimension change
     layers.append(ResidualBlock(in_channels, out_channels, stride))
@@ -72,10 +108,18 @@ def make_residual_stack(num_blocks, in_channels, out_channels, stride=1):
 ##############################
 class DeepUNet(nn.Module):
     """
-    A deeper UNet that stacks multiple residual blocks at each level.
-    The encoder and decoder each have a number of blocks (e.g., 5 blocks per level)
-    for deeper feature extraction and reconstruction. This depth should help preserve
-    fine spectral details.
+    A deep UNet architecture with residual blocks and attention mechanisms.
+    Key features:
+    - 4-level encoder-decoder structure
+    - Multiple residual blocks per level
+    - Attention gates in decoder
+    - Skip connections with feature concatenation
+    
+    The architecture is designed to:
+    1. Extract hierarchical features in the encoder
+    2. Preserve fine details through skip connections
+    3. Focus on relevant features using attention
+    4. Reconstruct the spectrogram in the decoder
     """
     def __init__(self, in_channels=1, out_channels=1, base_features=64, blocks_per_level=5):
         super(DeepUNet, self).__init__()
@@ -152,6 +196,16 @@ class DeepUNet(nn.Module):
 # LSTM for Parameter Prediction
 ##############################
 class LSTMForecasting(nn.Module):
+    """
+    LSTM network for predicting audio processing parameters over time.
+    Features:
+    - Single or multi-layer LSTM
+    - Xavier/orthogonal initialization
+    - Sigmoid output for normalized parameters
+    
+    The LSTM processes the temporal evolution of spectral features
+    to predict appropriate processing parameters for each time frame.
+    """
     def __init__(self, input_size=1, hidden_size=32, num_layers=1, num_params=10):
         super(LSTMForecasting, self).__init__()
         self.lstm = nn.LSTM(input_size, hidden_size, num_layers, batch_first=True)
@@ -175,9 +229,17 @@ class LSTMForecasting(nn.Module):
 ##############################
 class OneStageDeepUNet(nn.Module):
     """
-    The final model combines a single deep UNet (which now is very deep to preserve details)
-    with an LSTM module for parameter prediction. We output the deep UNet result (for visualization)
-    and the LSTM predictions.
+    The complete model that combines spectrogram processing and parameter prediction.
+    
+    Architecture:
+    1. Deep UNet processes the input spectrogram
+    2. Average energy is extracted along frequency axis
+    3. LSTM predicts processing parameters for each time frame
+    
+    This unified approach allows the model to:
+    - Process the spectrogram while preserving details
+    - Predict appropriate processing parameters
+    - Maintain temporal consistency in parameter predictions
     """
     def __init__(self, sr, hop_length, in_channels=1, out_channels=1, base_features=64,
                 blocks_per_level=5, lstm_hidden=32, num_layers=1, num_params=10):
