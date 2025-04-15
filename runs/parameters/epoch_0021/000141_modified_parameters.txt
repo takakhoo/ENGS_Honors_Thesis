@@ -1,0 +1,23 @@
+Predicted Normalized Parameters:
+Gain (Norm): Mean=0.5195, Std=0.0024, Min=0.4845, Max=0.5201
+EQ Center (Norm): Mean=0.1785, Std=0.0139, Min=0.1761, Max=0.4507
+EQ Q (Norm): Mean=0.1492, Std=0.0164, Min=0.1468, Max=0.4749
+EQ Gain (Norm): Mean=0.4997, Std=0.0010, Min=0.4858, Max=0.5002
+Comp Threshold (Norm): Mean=0.7334, Std=0.0127, Min=0.4854, Max=0.7346
+Comp Ratio (Norm): Mean=0.0795, Std=0.0182, Min=0.0777, Max=0.4495
+Comp Makeup (Norm): Mean=0.0225, Std=0.0183, Min=0.0213, Max=0.4322
+Reverb Decay (Norm): Mean=0.0513, Std=0.0196, Min=0.0499, Max=0.4719
+Echo Delay (Norm): Mean=0.0153, Std=0.0210, Min=0.0138, Max=0.4921
+Echo Attenuation (Norm): Mean=0.4002, Std=0.0053, Min=0.3995, Max=0.5079
+
+Predicted Unnormalized Parameters:
+Gain: Mean=0.0390, Std=0.0048, Min=-0.0310, Max=0.0401
+EQ Center: Mean=3935.8347, Std=306.5536, Min=3883.6018, Max=9938.9707
+EQ Q: Mean=1.5767, Std=0.1626, Min=1.5536, Max=4.8011
+EQ Gain: Mean=-0.0054, Std=0.0191, Min=-0.2835, Max=0.0049
+Comp Threshold: Mean=-15.9932, Std=0.7635, Min=-30.8771, Max=-15.9256
+Comp Ratio: Mean=2.5108, Std=0.3455, Min=2.4762, Max=9.5410
+Comp Makeup: Mean=0.4506, Std=0.3659, Min=0.4264, Max=8.6433
+Reverb Decay: Mean=0.6081, Std=0.1939, Min=0.5939, Max=4.7715
+Echo Delay: Mean=1.5307, Std=2.1040, Min=1.3765, Max=49.2089
+Echo Attenuation: Mean=0.4002, Std=0.0053, Min=0.3995, Max=0.5079

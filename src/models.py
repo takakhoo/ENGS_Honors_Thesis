@@ -6,6 +6,10 @@ It includes:
 - Deep UNet architecture for spectrogram processing
 - LSTM module for parameter prediction
 - Combined model that integrates both components
+
+this file is like the kitchen of our audio mastering model - it preps all the data before we cook it up in the model
+think of it like prepping ingredients for a recipe, but for sound instead of food
+
 """
 
 import torch

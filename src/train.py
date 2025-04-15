@@ -61,6 +61,7 @@ from tqdm import tqdm
 import librosa
 import matplotlib.pyplot as plt
 from datetime import datetime
+import argparse
 
 from dataset import PairedAudioDataset, compute_mel_spectrogram
 from models import OneStageDeepUNet
@@ -315,36 +316,10 @@ def train_epoch(model, train_loader, optimizer, criterion, device):
 # ----------------------------
 # Training Loop
 # ----------------------------
-def train_model(model, train_loader, val_loader, device, num_epochs=100, learning_rate=5e-5, weight_decay=1e-5):
+def train_model(model, train_loader, val_loader, device, num_epochs=100, learning_rate=5e-5, weight_decay=1e-5, start_epoch=0, checkpoint_data=None):
     """
     Main training loop that orchestrates the entire training process.
-    
-    Implementation details:
-    1. Setup:
-       - Creates logging directory
-       - Initializes loss function and optimizer
-       - Sets up learning rate scheduler
-       - Prepares checkpoint directory
-    
-    2. Training loop:
-       - Performs training epochs
-       - Validates model periodically
-       - Adjusts learning rate
-       - Saves checkpoints
-       - Implements early stopping
-    
-    3. Monitoring:
-       - Tracks loss history
-       - Saves loss plots
-       - Logs training progress
-       - Monitors validation performance
-    
-    Key features:
-    - Learning rate scheduling
-    - Early stopping
-    - Model checkpointing
-    - Comprehensive logging
-    - Loss visualization
+    Now supports resuming from checkpoints.
     """
     project_root = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
     timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
@@ -355,10 +330,7 @@ def train_model(model, train_loader, val_loader, device, num_epochs=100, learnin
     optimizer = optim.Adam(model.parameters(), lr=learning_rate, weight_decay=weight_decay)
     scheduler = optim.lr_scheduler.ReduceLROnPlateau(optimizer, mode='min', factor=0.5, patience=3, verbose=True)
     
-    best_val_loss = float('inf')
-    checkpoint_dir = os.path.join(project_root, "checkpoints")
-    os.makedirs(checkpoint_dir, exist_ok=True)
-    
+    # Initialize loss history and best val loss
     loss_history = {
         'total': [],
         'spec_loss_l1': [],
@@ -367,17 +339,33 @@ def train_model(model, train_loader, val_loader, device, num_epochs=100, learnin
         'val': []
     }
     
+    # If resuming from checkpoint, restore states
+    if checkpoint_data is not None:
+        model.load_state_dict(checkpoint_data['model_state_dict'])
+        optimizer.load_state_dict(checkpoint_data['optimizer_state_dict'])
+        best_val_loss = checkpoint_data['val_loss']
+        
+        # If checkpoint contains loss history, restore it
+        if 'loss_history' in checkpoint_data:
+            loss_history = checkpoint_data['loss_history']
+    else:
+        best_val_loss = float('inf')
+    
+    checkpoint_dir = os.path.join(project_root, "checkpoints")
+    os.makedirs(checkpoint_dir, exist_ok=True)
+    
     train_losses = []
     val_losses = []
     patience_counter = 0
     early_stopping_patience = 10
     
-    print("\nStarting training...")
+    print("\nStarting/Resuming training...")
+    print(f"Starting from epoch {start_epoch + 1}")
     print(f"Initial learning rate: {learning_rate:.2e}")
     print(f"Training on {len(train_loader.dataset)} samples")
     print(f"Validating on {len(val_loader.dataset)} samples")
     
-    for epoch in range(num_epochs):
+    for epoch in range(start_epoch, num_epochs):
         # Training phase
         model.train()
         train_loss = train_epoch(model, train_loader, optimizer, criterion, device)
@@ -423,14 +411,18 @@ def train_model(model, train_loader, val_loader, device, num_epochs=100, learnin
         print(f"    (Spec L1: {loss_history['spec_loss_l1'][-1]:.4f}, Param: {loss_history['parameter_loss'][-1]:.4f}, Perc: {loss_history['perceptual_loss'][-1]:.4f})")
         print(f"  Learning Rate: {current_lr:.2e}")
         
+        # Modified checkpoint saving to include loss history
+        checkpoint_data = {
+            'epoch': epoch,
+            'model_state_dict': model.state_dict(),
+            'optimizer_state_dict': optimizer.state_dict(),
+            'val_loss': val_loss,
+            'loss_history': loss_history  # Save loss history in checkpoint
+        }
+        
         if val_loss < best_val_loss:
             best_val_loss = val_loss
-            torch.save({
-                'epoch': epoch,
-                'model_state_dict': model.state_dict(),
-                'optimizer_state_dict': optimizer.state_dict(),
-                'val_loss': val_loss
-            }, os.path.join(checkpoint_dir, 'best_model.pt'))
+            torch.save(checkpoint_data, os.path.join(checkpoint_dir, 'best_model.pt'))
             print("  New best model saved!")
             patience_counter = 0
         else:
@@ -438,12 +430,7 @@ def train_model(model, train_loader, val_loader, device, num_epochs=100, learnin
             print(f"  No improvement for {patience_counter} epochs")
         
         # Save regular checkpoint
-        torch.save({
-            'epoch': epoch,
-            'model_state_dict': model.state_dict(),
-            'optimizer_state_dict': optimizer.state_dict(),
-            'val_loss': val_loss
-        }, os.path.join(checkpoint_dir, f'one_stage_deep_unet_epoch_{epoch+1}.pt'))
+        torch.save(checkpoint_data, os.path.join(checkpoint_dir, f'one_stage_deep_unet_epoch_{epoch+1}.pt'))
         
         # Save loss plot
         loss_plot_path = os.path.join(log_dir, 'loss_plot.png')
@@ -461,20 +448,13 @@ def train_model(model, train_loader, val_loader, device, num_epochs=100, learnin
 def main():
     """
     Main function that sets up and runs the training process.
-    
-    Implementation details:
-    1. Sets up project paths and imports
-    2. Configures hyperparameters
-    3. Prepares dataset and data loaders
-    4. Initializes model and moves to device
-    5. Runs training process
-    
-    Key features:
-    - Configurable hyperparameters
-    - Automatic device selection (CPU/GPU)
-    - Dataset validation
-    - Progress monitoring
+    Now supports resuming from checkpoints via command line arguments.
     """
+    # Set up argument parser
+    parser = argparse.ArgumentParser(description='Train or resume training of the audio mastering model')
+    parser.add_argument('--resume', type=str, help='Path to checkpoint file to resume training from')
+    args = parser.parse_args()
+    
     project_root = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
     sys.path.append(project_root)
     print("Project root:", project_root)
@@ -530,11 +510,32 @@ def main():
     model = model.to(device)
     print("Using device:", device)
     
-    # Start training
+    # Handle checkpoint loading if resuming
+    start_epoch = 0
+    checkpoint_data = None
+    if args.resume:
+        print(f"Loading checkpoint: {args.resume}")
+        checkpoint_path = args.resume
+        if not os.path.isabs(checkpoint_path):
+            checkpoint_path = os.path.join(project_root, "checkpoints", checkpoint_path)
+        
+        if os.path.exists(checkpoint_path):
+            checkpoint_data = torch.load(checkpoint_path, map_location=device)
+            start_epoch = checkpoint_data['epoch'] + 1
+            print(f"Resuming from epoch {start_epoch}")
+        else:
+            print(f"Warning: Checkpoint file {checkpoint_path} not found. Starting from scratch.")
+    
+    # Start/Resume training
     print("Starting training...")
-    train_losses, val_losses = train_model(model, train_loader, val_loader, device,
-                                        num_epochs=num_epochs, learning_rate=learning_rate,
-                                        weight_decay=weight_decay)
+    train_losses, val_losses = train_model(
+        model, train_loader, val_loader, device,
+        num_epochs=num_epochs,
+        learning_rate=learning_rate,
+        weight_decay=weight_decay,
+        start_epoch=start_epoch,
+        checkpoint_data=checkpoint_data
+    )
     print("Training complete.")
 
 if __name__ == "__main__":
