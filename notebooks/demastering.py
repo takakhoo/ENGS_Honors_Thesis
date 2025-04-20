@@ -1,4 +1,3 @@
-#!/usr/bin/env python3
 """
 Demastering a Song from the FMA Dataset
 
